@@ -3,6 +3,7 @@
   optimizer = true
   optimizer_runs = 10_000_000
   solc_version = "0.8.20"
+  remappings = ["@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts"]
   verbosity = 3
 
 [profile.ci]
