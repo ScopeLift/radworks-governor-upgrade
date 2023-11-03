@@ -51,7 +51,7 @@ contract RadworksGovernor is
   /// threshold.
   ///
   /// TODO: placeholder
-  uint256 private constant QUORUM = 100_000e18; // 100,000 RAD
+  uint256 private constant QUORUM = 4_000_000e18; // 4,000,000 RAD
 
   /// @param _initialVotingDelay The initial voting delay this Governor will enforce.
   /// @param _initialVotingPeriod The initial voting period this Governor will enforce.
@@ -102,6 +102,17 @@ contract RadworksGovernor is
     returns (bool)
   {
     return _proposalVotersWeightCast[proposalId][account] > 0;
+  }
+
+  /// @dev Accessor to the internal vote counts.
+  function proposalVotes(uint256 proposalId)
+    public
+    view
+    virtual
+    returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes)
+  {
+    ProposalVote storage proposalVote = _proposalVotes[proposalId];
+    return (proposalVote.againstVotes, proposalVote.forVotes, proposalVote.abstainVotes);
   }
 
   /// @inheritdoc Governor

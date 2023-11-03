@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+pragma solidity ^0.8.18;
+
+contract Constants {
+  address constant GOVERNOR_ALPHA = 0x690e775361AD66D1c4A25d89da9fCd639F5198eD;
+  address payable constant RAD_TOKEN = payable(0x31c8EAcBFFdD875c74b94b077895Bd78CF1E64A3);
+  address constant TIMELOCK = 0x8dA8f82d2BbDd896822de723F55D6EdF416130ba;
+  address constant PROPOSER = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b; // TODO: resolve the list
+    // of large delegates with tally
+  address constant PTAUSDC_ADDRESS = 0xdd4d117723C257CEe402285D3aCF218E9A8236E1;
+  address constant DAI_ADDRESS = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+  address constant STETH_ADDRESS = 0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84;
+  uint256 constant MAX_REASONABLE_TIME_PERIOD = 302_400; // 6 weeks assume a 12 sec block time
+  // address constant V4_TOKEN_FAUCET = 0xBD537257fAd96e977b9E545bE583bbF7028F30b9;
+  // address constant V3_CONFIGURABLE_RESERVE = 0xd1797D46C3E825fce5215a0259D3426a5c49455C;
+  // address constant POOLTOGETHER_TREASURY = 0x42cd8312D2BCe04277dD5161832460e95b24262E;
+  // address constant STAKE_PRIZE_POOL = 0x396b4489da692788e327E2e4b2B0459A5Ef26791;
+  // address constant POOLTOGETHER_UNISWAP_SAFE = 0xDa63D70332139E6A8eCA7513f4b6E2E0Dc93b693;
+  // address constant UNISWAP_POSITION_CONTRACT = 0xC36442b4a4522E871399CD717aBDD847Ab11FE88;
+  // address constant POOLTOGETHER_POOL_TICKET = 0x27D22A7648e955E510a40bDb058333E9190d12D4;
+
+  // we have not yet deployed the Radworks Bravo Governor
+  address constant DEPLOYED_BRAVO_GOVERNOR = 0x1111111111111111111111111111111111111111;
+
+  uint256 constant QUORUM = 4_000_000e18;
+}
