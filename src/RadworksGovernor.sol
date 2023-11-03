@@ -13,15 +13,15 @@ import {ICompoundTimelock} from
 import {GovernorSettings} from "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
 
 import {IRadworksTimelock} from "src/interfaces/IRadworksTimelock.sol";
-import {GovernorTimelockCompound} from "src/lib/GovernorTimelockCompound.sol";
+import {RadworksGovernorTimelockCompound} from "src/lib/RadworksGovernorTimelockCompound.sol";
 import {GovernorCompatibilityBravo} from
   "@openzeppelin/contracts/governance/compatibility/GovernorCompatibilityBravo.sol";
 
-/// @notice The upgraded Radworks Governor: Bravo compatible and built with OpenZeppelin.
+/// @notice The upgraded Radworks Governor: Bravo compatible and extended from OpenZeppelin.
 contract RadworksGovernor is
   Governor,
   GovernorVotesComp,
-  GovernorTimelockCompound,
+  RadworksGovernorTimelockCompound,
   GovernorSettings
 {
   struct ProposalVote {
@@ -36,8 +36,7 @@ contract RadworksGovernor is
     ERC20VotesComp(0x31c8EAcBFFdD875c74b94b077895Bd78CF1E64A3);
 
   /// @notice The address of the existing Radworks DAO Timelock on Ethereum mainnet through
-  /// which
-  /// this Governor executes transactions.
+  /// which this Governor executes transactions.
   IRadworksTimelock private constant TIMELOCK =
     IRadworksTimelock(payable(0x8dA8f82d2BbDd896822de723F55D6EdF416130ba));
 
@@ -50,12 +49,9 @@ contract RadworksGovernor is
   /// TODO: placeholder
   uint256 private constant QUORUM = 100_000e18; // 100,000 RAD
 
-  /// @param _initialVotingDelay The deployment value for the voting delay this Governor will
-  /// enforce.
-  /// @param _initialVotingPeriod The deployment value for the voting period this Governor will
-  /// enforce.
-  /// @param _initialProposalThreshold The deployment value for the number of RAD required to
-  /// submit
+  /// @param _initialVotingDelay The initial voting delay this Governor will enforce.
+  /// @param _initialVotingPeriod The initial voting period this Governor will enforce.
+  /// @param _initialProposalThreshold The initial number of RAD required to submit
   /// a proposal this Governor will enforce.
   constructor(
     uint256 _initialVotingDelay,
@@ -64,44 +60,44 @@ contract RadworksGovernor is
   )
     GovernorVotesComp(RAD_TOKEN)
     GovernorSettings(_initialVotingDelay, _initialVotingPeriod, _initialProposalThreshold)
-    GovernorTimelockCompound(TIMELOCK)
+    RadworksGovernorTimelockCompound(TIMELOCK)
     Governor(GOVERNOR_NAME)
   {}
 
-  /**
-   * @dev Mapping from proposal ID to vote tallies for that proposal.
-   */
+  ///
+  /// @dev Mapping from proposal ID to vote tallies for that proposal.
+  ///
   mapping(uint256 => ProposalVote) private _proposalVotes;
 
-  /**
-   * @dev Mapping from proposal ID and address to the weight the address
-   * has cast on that proposal, e.g. _proposalVotersWeightCast[42][0xBEEF]
-   * would tell you the number of votes that 0xBEEF has cast on proposal 42.
-   */
+  ///
+  /// @dev Mapping from proposal ID and address to the weight the address
+  /// has cast on that proposal, e.g. _proposalVotersWeightCast[42][0xBEEF]
+  /// would tell you the number of votes that 0xBEEF has cast on proposal 42.
+  ///
   mapping(uint256 => mapping(address => uint256)) private _proposalVotersWeightCast;
 
-  /// @dev We override this function to resolve ambiguity between inherited contracts.
+  /// @inheritdoc Governor
   function supportsInterface(bytes4 interfaceId)
     public
     view
     virtual
-    override(Governor, GovernorTimelockCompound)
+    override(Governor, RadworksGovernorTimelockCompound)
     returns (bool)
   {
-    return GovernorTimelockCompound.supportsInterface(interfaceId);
+    return RadworksGovernorTimelockCompound.supportsInterface(interfaceId);
   }
 
-  /**
-   * @dev See {IGovernor-COUNTING_MODE}.
-   */
+  ///
+  /// @dev See {IGovernor-COUNTING_MODE}.
+  ///
   // solhint-disable-next-line func-name-mixedcase
   function COUNTING_MODE() public pure override returns (string memory) {
     return "support=bravo&quorum=bravo";
   }
 
-  /**
-   * @dev See {IGovernor-hasVoted}.
-   */
+  ///
+  /// @dev See {IGovernor-hasVoted}.
+  ///
   function hasVoted(uint256 proposalId, address account)
     public
     view
@@ -112,18 +108,18 @@ contract RadworksGovernor is
     return _proposalVotersWeightCast[proposalId][account] > 0;
   }
 
-  /**
-   * @dev See {Governor-_quorumReached}.
-   */
+  ///
+  /// @dev See {Governor-_quorumReached}.
+  ///
   function _quorumReached(uint256 proposalId) internal view virtual override returns (bool) {
     ProposalVote storage proposalVote = _proposalVotes[proposalId];
 
     return quorum(proposalSnapshot(proposalId)) <= proposalVote.forVotes + proposalVote.abstainVotes;
   }
 
-  /**
-   * @dev See {Governor-_voteSucceeded}. In this module, forVotes must be > againstVotes.
-   */
+  ///
+  /// @dev See {Governor-_voteSucceeded}. In this module, forVotes must be > againstVotes.
+  ///
   function _voteSucceeded(uint256 proposalId) internal view virtual override returns (bool) {
     ProposalVote storage proposalVote = _proposalVotes[proposalId];
 
@@ -135,7 +131,7 @@ contract RadworksGovernor is
     address account,
     uint8 support,
     uint256 weight,
-    bytes memory params
+    bytes memory
   ) internal override {
     require(
       _proposalVotersWeightCast[proposalId][account] == 0,
@@ -155,7 +151,7 @@ contract RadworksGovernor is
     }
   }
 
-  /// @dev We override this function to resolve ambiguity between inherited contracts.
+  /// @inheritdoc Governor
   function castVoteWithReasonAndParamsBySig(
     uint256 proposalId,
     uint8 support,
@@ -168,7 +164,7 @@ contract RadworksGovernor is
     return Governor.castVoteWithReasonAndParamsBySig(proposalId, support, reason, params, v, r, s);
   }
 
-  /// @dev We override this function to resolve ambiguity between inherited contracts.
+  /// @inheritdoc Governor
   function proposalThreshold()
     public
     view
@@ -179,15 +175,15 @@ contract RadworksGovernor is
     return GovernorSettings.proposalThreshold();
   }
 
-  /// @dev We override this function to resolve ambiguity between inherited contracts.
+  /// @inheritdoc Governor
   function state(uint256 proposalId)
     public
     view
     virtual
-    override(Governor, GovernorTimelockCompound)
+    override(Governor, RadworksGovernorTimelockCompound)
     returns (ProposalState)
   {
-    return GovernorTimelockCompound.state(proposalId);
+    return RadworksGovernorTimelockCompound.state(proposalId);
   }
 
   /// @notice The amount of RAD required to meet the quorum threshold for a proposal
@@ -197,36 +193,37 @@ contract RadworksGovernor is
     return QUORUM;
   }
 
-  /// @dev We override this function to resolve ambiguity between inherited contracts.
+  /// @inheritdoc Governor
   function _execute(
     uint256 proposalId,
     address[] memory targets,
     uint256[] memory values,
     bytes[] memory calldatas,
     bytes32 descriptionHash
-  ) internal virtual override(Governor, GovernorTimelockCompound) {
-    return
-      GovernorTimelockCompound._execute(proposalId, targets, values, calldatas, descriptionHash);
+  ) internal virtual override(Governor, RadworksGovernorTimelockCompound) {
+    return RadworksGovernorTimelockCompound._execute(
+      proposalId, targets, values, calldatas, descriptionHash
+    );
   }
 
-  /// @dev We override this function to resolve ambiguity between inherited contracts.
+  /// @inheritdoc Governor
   function _cancel(
     address[] memory targets,
     uint256[] memory values,
     bytes[] memory calldatas,
     bytes32 descriptionHash
-  ) internal virtual override(Governor, GovernorTimelockCompound) returns (uint256) {
-    return GovernorTimelockCompound._cancel(targets, values, calldatas, descriptionHash);
+  ) internal virtual override(Governor, RadworksGovernorTimelockCompound) returns (uint256) {
+    return RadworksGovernorTimelockCompound._cancel(targets, values, calldatas, descriptionHash);
   }
 
-  /// @dev We override this function to resolve ambiguity between inherited contracts.
+  /// @inheritdoc Governor
   function _executor()
     internal
     view
     virtual
-    override(Governor, GovernorTimelockCompound)
+    override(Governor, RadworksGovernorTimelockCompound)
     returns (address)
   {
-    return GovernorTimelockCompound._executor();
+    return RadworksGovernorTimelockCompound._executor();
   }
 }

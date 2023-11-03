@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.6.0) (governance/extensions/GovernorTimelockCompound.sol)
 //
-// The Radworks Timelock is not compatible with the Governor Alpha Timelock interface. This
-// meant we had to fork the contracts that interact with the timelock and replace the Timelock
-// interface with the Radworks Timelock interface. Also, if Radworks decides to change the
-// Timelock in the future then it must conform to the Radworks Timelock interface.
+// This RadworksGovernorTimelockCompound has been modified from the OZ GovernorTimelockCompound to
+// support a Radworks Timelock which does not conform to Governor Alpha Timelock. If Radworks
+// decides to change the Timelock in the future then it must conform to the Radworks Timelock
+// interface.
 //
 // Radworks Timelock interface:
-// https://etherscan.io/address/0xB3a87172F555ae2a2AB79Be60B336D2F7D0187f0#code#F1#L306
+// https://etherscan.io/address/0x690e775361AD66D1c4A25d89da9fCd639F5198eD#code#F1#L474
 // Governor Alpha Timelock interface:
 // https://github.com/compound-finance/compound-protocol/blob/a3214f67b73310d547e00fc578e8355911c9d376/contracts/Governance/GovernorAlpha.sol#L320
 // forgefmt: disable-start
@@ -36,7 +36,7 @@ import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
  *
  * _Available since v4.3._
  */
-abstract contract GovernorTimelockCompound is IGovernorTimelock, Governor {
+abstract contract RadworksGovernorTimelockCompound is IGovernorTimelock, Governor {
   using SafeCast for uint256;
   using Timers for Timers.Timestamp;
 
@@ -44,7 +44,7 @@ abstract contract GovernorTimelockCompound is IGovernorTimelock, Governor {
     Timers.Timestamp timer;
   }
 
-  /// @dev The interface for this variable was changed to conform to the Radworks Timelock interface.
+  /// @dev Modified to conform to the Radworks Timelock interface.
   ///
   /// Original openzeppelin:
   /// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/49c0e4370d0cc50ea6090709e3835a3091e33ee2/contracts/governance/extensions/GovernorTimelockCompound.sol#L31
@@ -59,7 +59,7 @@ abstract contract GovernorTimelockCompound is IGovernorTimelock, Governor {
 
   /**
    * @dev Set the timelock.
-   * @dev The timelock interface was changed from the original Openzeppelin source to conform to the Radworks interface.
+   * @dev Modified to conform to the Radworks interface.
    *
    * Original Openzeppelin source:
    * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/49c0e4370d0cc50ea6090709e3835a3091e33ee2/contracts/governance/extensions/GovernorTimelockCompound.sol#L43
@@ -162,7 +162,8 @@ abstract contract GovernorTimelockCompound is IGovernorTimelock, Governor {
   ) internal virtual override {
     uint256 eta = proposalEta(proposalId);
     require(eta > 0, "GovernorTimelockCompound: proposal not yet queued");
-    // In the original contract, the _timelock is not casted to an address. Failing to cast it causes a compile error "Explicit type conversion not allowed from "contract IRadworksTimelock" to "address payable".".
+    // In the original contract, the _timelock is not casted to an address. Failing to cast it causes a compile
+    // error "Explicit type conversion not allowed from "contract IRadworksTimelock" to "address payable".".
     // We explicitly cast to an address to solve this error.
     //
     // Original Openzeppelin line:
@@ -223,7 +224,7 @@ abstract contract GovernorTimelockCompound is IGovernorTimelock, Governor {
    * governance.
 
    * CAUTION: It is not recommended to change the timelock while there are other queued governance proposals.
-   * @dev The interface for `newTimelock` was changed to conform to the Radworks Timelock interface.
+   * @dev Modified to conform to the Radworks Timelock interface.
    *
    * Original Openzeppelin source:
    * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/49c0e4370d0cc50ea6090709e3835a3091e33ee2/contracts/governance/extensions/GovernorTimelockCompound.sol#L185
@@ -234,7 +235,7 @@ abstract contract GovernorTimelockCompound is IGovernorTimelock, Governor {
 
 
   /**
-   * @dev The interface for `newTimelock` was changed to conform to the Radworks Timelock interface.
+   * @dev Modified to conform to the Radworks Timelock interface.
    *
    * Original Openzeppelin source:
    * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/49c0e4370d0cc50ea6090709e3835a3091e33ee2/contracts/governance/extensions/GovernorTimelockCompound.sol#L189

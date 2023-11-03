@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.0;
 
+// Interface for Radworks' already deployed timelock. Does not conform to Governor Alpha Timelock.
+
 interface IRadworksTimelock {
   event CancelTransaction(
     bytes32 indexed txHash,
