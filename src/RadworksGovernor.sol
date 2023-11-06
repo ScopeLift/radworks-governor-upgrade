@@ -64,16 +64,12 @@ contract RadworksGovernor is
     Governor(GOVERNOR_NAME)
   {}
 
-  ///
   /// @dev Mapping from proposal ID to vote tallies for that proposal.
-  ///
   mapping(uint256 => ProposalVote) private _proposalVotes;
 
-  ///
   /// @dev Mapping from proposal ID and address to the weight the address
   /// has cast on that proposal, e.g. _proposalVotersWeightCast[42][0xBEEF]
   /// would tell you the number of votes that 0xBEEF has cast on proposal 42.
-  ///
   mapping(uint256 => mapping(address => uint256)) private _proposalVotersWeightCast;
 
   /// @inheritdoc Governor
@@ -87,17 +83,13 @@ contract RadworksGovernor is
     return RadworksGovernorTimelockCompound.supportsInterface(interfaceId);
   }
 
-  ///
   /// @dev See {IGovernor-COUNTING_MODE}.
-  ///
   // solhint-disable-next-line func-name-mixedcase
   function COUNTING_MODE() public pure override returns (string memory) {
     return "support=bravo&quorum=bravo";
   }
 
-  ///
   /// @dev See {IGovernor-hasVoted}.
-  ///
   function hasVoted(uint256 proposalId, address account)
     public
     view
@@ -108,18 +100,14 @@ contract RadworksGovernor is
     return _proposalVotersWeightCast[proposalId][account] > 0;
   }
 
-  ///
   /// @dev See {Governor-_quorumReached}.
-  ///
   function _quorumReached(uint256 proposalId) internal view virtual override returns (bool) {
     ProposalVote storage proposalVote = _proposalVotes[proposalId];
 
     return quorum(proposalSnapshot(proposalId)) <= proposalVote.forVotes + proposalVote.abstainVotes;
   }
 
-  ///
   /// @dev See {Governor-_voteSucceeded}. In this module, forVotes must be > againstVotes.
-  ///
   function _voteSucceeded(uint256 proposalId) internal view virtual override returns (bool) {
     ProposalVote storage proposalVote = _proposalVotes[proposalId];
 
