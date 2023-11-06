@@ -83,13 +83,13 @@ contract RadworksGovernor is
     return RadworksGovernorTimelockCompound.supportsInterface(interfaceId);
   }
 
-  /// @dev See {IGovernor-COUNTING_MODE}.
+  /// @inheritdoc IGovernor
   // solhint-disable-next-line func-name-mixedcase
   function COUNTING_MODE() public pure override returns (string memory) {
     return "support=bravo&quorum=bravo";
   }
 
-  /// @dev See {IGovernor-hasVoted}.
+  /// @inheritdoc IGovernor
   function hasVoted(uint256 proposalId, address account)
     public
     view
@@ -100,20 +100,21 @@ contract RadworksGovernor is
     return _proposalVotersWeightCast[proposalId][account] > 0;
   }
 
-  /// @dev See {Governor-_quorumReached}.
+  /// @inheritdoc Governor
   function _quorumReached(uint256 proposalId) internal view virtual override returns (bool) {
     ProposalVote storage proposalVote = _proposalVotes[proposalId];
 
     return quorum(proposalSnapshot(proposalId)) <= proposalVote.forVotes + proposalVote.abstainVotes;
   }
 
-  /// @dev See {Governor-_voteSucceeded}. In this module, forVotes must be > againstVotes.
+  /// @inheritdoc Governor
   function _voteSucceeded(uint256 proposalId) internal view virtual override returns (bool) {
     ProposalVote storage proposalVote = _proposalVotes[proposalId];
 
     return proposalVote.forVotes > proposalVote.againstVotes;
   }
 
+  /// @inheritdoc Governor
   function _countVote(
     uint256 proposalId,
     address account,
