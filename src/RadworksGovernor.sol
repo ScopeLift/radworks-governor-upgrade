@@ -12,8 +12,10 @@ import {ICompoundTimelock} from
   "@openzeppelin/contracts/governance/extensions/GovernorTimelockCompound.sol";
 import {GovernorSettings} from "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
 
-import {IRadworksTimelock} from "src/interfaces/IRadworksTimelock.sol";
-import {RadworksGovernorTimelockCompound} from "src/lib/RadworksGovernorTimelockCompound.sol";
+import {
+  GovernorTimelockCompound,
+  ICompoundTimelock
+} from "@openzeppelin/contracts/governance/extensions/GovernorTimelockCompound.sol";
 import {GovernorCompatibilityBravo} from
   "@openzeppelin/contracts/governance/compatibility/GovernorCompatibilityBravo.sol";
 
@@ -21,7 +23,7 @@ import {GovernorCompatibilityBravo} from
 contract RadworksGovernor is
   Governor,
   GovernorVotesComp,
-  RadworksGovernorTimelockCompound,
+  GovernorTimelockCompound,
   GovernorSettings
 {
   struct ProposalVote {
@@ -37,8 +39,8 @@ contract RadworksGovernor is
 
   /// @notice The address of the existing Radworks DAO Timelock on Ethereum mainnet through
   /// which this Governor executes transactions.
-  IRadworksTimelock private constant TIMELOCK =
-    IRadworksTimelock(payable(0x8dA8f82d2BbDd896822de723F55D6EdF416130ba));
+  ICompoundTimelock private constant TIMELOCK =
+    ICompoundTimelock(payable(0x8dA8f82d2BbDd896822de723F55D6EdF416130ba));
 
   /// @notice Human readable name of this Governor.
   string private constant GOVERNOR_NAME = "Radworks Governor Bravo";
@@ -60,7 +62,7 @@ contract RadworksGovernor is
   )
     GovernorVotesComp(RAD_TOKEN)
     GovernorSettings(_initialVotingDelay, _initialVotingPeriod, _initialProposalThreshold)
-    RadworksGovernorTimelockCompound(TIMELOCK)
+    GovernorTimelockCompound(TIMELOCK)
     Governor(GOVERNOR_NAME)
   {}
 
@@ -77,10 +79,10 @@ contract RadworksGovernor is
     public
     view
     virtual
-    override(Governor, RadworksGovernorTimelockCompound)
+    override(Governor, GovernorTimelockCompound)
     returns (bool)
   {
-    return RadworksGovernorTimelockCompound.supportsInterface(interfaceId);
+    return GovernorTimelockCompound.supportsInterface(interfaceId);
   }
 
   /// @inheritdoc IGovernor
@@ -169,10 +171,10 @@ contract RadworksGovernor is
     public
     view
     virtual
-    override(Governor, RadworksGovernorTimelockCompound)
+    override(Governor, GovernorTimelockCompound)
     returns (ProposalState)
   {
-    return RadworksGovernorTimelockCompound.state(proposalId);
+    return GovernorTimelockCompound.state(proposalId);
   }
 
   /// @notice The amount of RAD required to meet the quorum threshold for a proposal
@@ -189,10 +191,9 @@ contract RadworksGovernor is
     uint256[] memory values,
     bytes[] memory calldatas,
     bytes32 descriptionHash
-  ) internal virtual override(Governor, RadworksGovernorTimelockCompound) {
-    return RadworksGovernorTimelockCompound._execute(
-      proposalId, targets, values, calldatas, descriptionHash
-    );
+  ) internal virtual override(Governor, GovernorTimelockCompound) {
+    return
+      GovernorTimelockCompound._execute(proposalId, targets, values, calldatas, descriptionHash);
   }
 
   /// @inheritdoc Governor
@@ -201,8 +202,8 @@ contract RadworksGovernor is
     uint256[] memory values,
     bytes[] memory calldatas,
     bytes32 descriptionHash
-  ) internal virtual override(Governor, RadworksGovernorTimelockCompound) returns (uint256) {
-    return RadworksGovernorTimelockCompound._cancel(targets, values, calldatas, descriptionHash);
+  ) internal virtual override(Governor, GovernorTimelockCompound) returns (uint256) {
+    return GovernorTimelockCompound._cancel(targets, values, calldatas, descriptionHash);
   }
 
   /// @inheritdoc Governor
@@ -210,9 +211,9 @@ contract RadworksGovernor is
     internal
     view
     virtual
-    override(Governor, RadworksGovernorTimelockCompound)
+    override(Governor, GovernorTimelockCompound)
     returns (address)
   {
-    return RadworksGovernorTimelockCompound._executor();
+    return GovernorTimelockCompound._executor();
   }
 }
