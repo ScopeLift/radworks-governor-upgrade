@@ -26,6 +26,8 @@ contract RadworksGovernor is
   GovernorTimelockCompound,
   GovernorSettings
 {
+  error VoteWouldExceedWeight(uint256 weight);
+
   struct ProposalVote {
     uint256 againstVotes;
     uint256 forVotes;
@@ -124,11 +126,9 @@ contract RadworksGovernor is
     uint256 weight,
     bytes memory
   ) internal override {
-    require(
-      _proposalVotersWeightCast[proposalId][account] == 0,
-      "Radworks Governor: vote would exceed weight"
-    );
-
+    if (_proposalVotersWeightCast[proposalId][account] != 0) {
+      revert VoteWouldExceedWeight(_proposalVotersWeightCast[proposalId][account]);
+    }
     _proposalVotersWeightCast[proposalId][account] = weight;
 
     if (support == uint8(GovernorCompatibilityBravo.VoteType.Against)) {
