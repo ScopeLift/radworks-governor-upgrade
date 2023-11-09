@@ -110,7 +110,7 @@ contract RadworksGovernor is
 
   /// @inheritdoc Governor
   function _voteSucceeded(uint256 proposalId) internal view virtual override returns (bool) {
-    ProposalVote storage proposalVote = _proposalVotes[proposalId];
+    ProposalVote memory proposalVote = _proposalVotes[proposalId];
 
     return proposalVote.forVotes > proposalVote.againstVotes;
   }
