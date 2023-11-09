@@ -13,8 +13,6 @@ import {RadworksGovernor} from "src/RadworksGovernor.sol";
 import {Constants} from "test/Constants.sol";
 
 abstract contract RadworksGovernorTest is Test, DeployInput, Constants {
-  // using FixedPointMathLib for uint256;
-
   ERC20VotesComp poolToken = ERC20VotesComp(RAD_TOKEN);
 
   struct Delegate {
