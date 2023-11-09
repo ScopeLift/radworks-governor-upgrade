@@ -101,17 +101,6 @@ contract RadworksGovernor is
     return _proposalVotersWeightCast[proposalId][account] > 0;
   }
 
-  /// @dev Accessor to the internal vote counts.
-  function proposalVotes(uint256 proposalId)
-    public
-    view
-    virtual
-    returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes)
-  {
-    ProposalVote storage proposalVote = _proposalVotes[proposalId];
-    return (proposalVote.againstVotes, proposalVote.forVotes, proposalVote.abstainVotes);
-  }
-
   /// @inheritdoc Governor
   function _quorumReached(uint256 proposalId) internal view virtual override returns (bool) {
     ProposalVote storage proposalVote = _proposalVotes[proposalId];
