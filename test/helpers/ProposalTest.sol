@@ -78,9 +78,11 @@ abstract contract ProposalTest is RadworksGovernorTest {
   }
 
   function _randomERC20Token(uint256 _seed) internal pure returns (IERC20 _token) {
-    if (_seed % 3 == 0) _token = IERC20(RAD_TOKEN);
-    if (_seed % 3 == 1) _token = IERC20(PTAUSDC_ADDRESS);
-    if (_seed % 3 == 2) _token = IERC20(DAI_ADDRESS);
+    if (_seed % 5 == 0) _token = IERC20(RAD_TOKEN);
+    if (_seed % 5 == 1) _token = IERC20(USDC_ADDRESS);
+    if (_seed % 5 == 2) _token = IERC20(GTC_ADDRESS);
+    if (_seed % 5 == 3) _token = IERC20(WETH_ADDRESS);
+    if (_seed % 5 == 4) _token = IERC20(MTV_ADDRESS);
   }
 
   function _upgradeProposalStartBlock() internal view returns (uint256) {
