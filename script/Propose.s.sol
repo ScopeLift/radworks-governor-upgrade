@@ -11,8 +11,9 @@ import {IGovernorAlpha} from "src/interfaces/IGovernorAlpha.sol";
 contract Propose is Script {
   IGovernorAlpha constant GOVERNOR_ALPHA =
     IGovernorAlpha(0x690e775361AD66D1c4A25d89da9fCd639F5198eD);
-  address PROPOSER = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b; // TODO: resolve the list of large
-    // delegates with tally
+
+  // TODO: resolve the list of large delegates with tally
+  address PROPOSER = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b; // cloudhead.eth
 
   function propose(RadworksGovernor _newGovernor) internal returns (uint256 _proposalId) {
     address[] memory _targets = new address[](2);
