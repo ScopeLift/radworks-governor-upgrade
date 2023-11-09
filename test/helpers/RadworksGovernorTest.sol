@@ -37,13 +37,13 @@ abstract contract RadworksGovernorTest is Test, DeployInput, Constants {
     // make sure to update any tests that reference specific delegates. The last delegate is the
     // proposer and lower in the voting power than the above link.
     // TODO: resolve the list of large delegates with tally
-    Delegate[] memory _delegates = new Delegate[](3);
+    Delegate[] memory _delegates = new Delegate[](6);
     _delegates[0] = Delegate("Delegate 0", 0x288703AA4e65dD244680FaefA742C488b7CD1992, 4.24e6);
     _delegates[1] = Delegate("Delegate 1", 0x69dceee155C31eA0c8354F90BDD65C12FaF5A00a, 1.86e6);
-    // _delegates[2] = Delegate("Delegate 2", 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b, 1.58e6);
-    // _delegates[3] = Delegate("Delegate 3", 0xc74f55155C41dfB90C122A1702b49C8295D9a724, 988.24e3);
-    // _delegates[4] = Delegate("Delegate 4", 0xBD8d617Ac53c5Efc5fBDBb51d445f7A2350D4940, 680.27e6);
-    _delegates[2] = Delegate("proposer", PROPOSER, 1.58e6);
+    _delegates[2] = Delegate("Delegate 2", 0xc74f55155C41dfB90C122A1702b49C8295D9a724, 950e3);
+    _delegates[3] = Delegate("Delegate 3", 0xBD8d617Ac53c5Efc5fBDBb51d445f7A2350D4940, 680.27e3);
+    _delegates[4] = Delegate("Delegate 4", 0x6851566a6183Eff8440456a58823B87107eAd707, 590.28e3);
+    _delegates[5] = Delegate("proposer", PROPOSER, 1.58e6);
 
     // Fetch up-to-date voting weight for the top delegates.
     for (uint256 i; i < _delegates.length; i++) {

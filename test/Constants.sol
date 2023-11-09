@@ -7,7 +7,7 @@ contract Constants {
   address constant TIMELOCK = 0x8dA8f82d2BbDd896822de723F55D6EdF416130ba;
 
   // TODO: resolve the list of large delegates with tallyaddress
-  address constant PROPOSER = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b;
+  address constant PROPOSER = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b; // cloudhead.eth
 
   address constant USDC_ADDRESS = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
   address constant GTC_ADDRESS = 0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F;
