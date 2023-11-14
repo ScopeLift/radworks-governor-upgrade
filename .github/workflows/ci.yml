@@ -10,6 +10,8 @@ on:
 env:
   FOUNDRY_PROFILE: ci
   MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}
+  DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+  PROPOSER_PRIVATE_KEY: ${{ secrets.PROPOSER_PRIVATE_KEY }}
 
 jobs:
   build:
