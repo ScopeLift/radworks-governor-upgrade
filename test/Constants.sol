@@ -17,6 +17,4 @@ contract Constants {
 
   // we have not yet deployed the Radworks Bravo Governor
   address constant DEPLOYED_BRAVO_GOVERNOR = 0x1111111111111111111111111111111111111111;
-
-  uint256 constant QUORUM = 4_000_000e18;
 }

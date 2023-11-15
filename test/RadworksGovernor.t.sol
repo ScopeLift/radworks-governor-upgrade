@@ -7,9 +7,10 @@ import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
 import {IGovernorAlpha} from "src/interfaces/IGovernorAlpha.sol";
 import {RadworksGovernorTest} from "test/helpers/RadworksGovernorTest.sol";
 import {ProposalTest} from "test/helpers/ProposalTest.sol";
+import "../script/DeployInput.sol";
 
 abstract contract Constructor is RadworksGovernorTest {
-  function testFuzz_CorrectlySetsAllConstructorArgs(uint256 _blockNumber) public {
+  function test_CorrectlySetsAllConstructorArgs() public {
     assertEq(governorBravo.name(), "Radworks Governor Bravo");
     assertEq(address(governorBravo.token()), RAD_TOKEN);
 
@@ -21,7 +22,10 @@ abstract contract Constructor is RadworksGovernorTest {
 
     assertEq(governorBravo.proposalThreshold(), INITIAL_PROPOSAL_THRESHOLD);
 
-    assertEq(governorBravo.quorum(_blockNumber), QUORUM);
+    assertEq(
+      governorBravo.quorum(block.number),
+      (governorBravo.token().totalSupply() * INITIAL_QUORUM_PCT) / 100
+    );
     assertEq(governorBravo.timelock(), TIMELOCK);
     assertEq(governorBravo.COUNTING_MODE(), "support=bravo&quorum=bravo");
   }

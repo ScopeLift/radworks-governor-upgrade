@@ -11,7 +11,7 @@ import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
 import {ICompoundTimelock} from
   "@openzeppelin/contracts/governance/extensions/GovernorTimelockCompound.sol";
 import {GovernorSettings} from "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
-
+import {GovernorVotesCompQuorumFraction} from "./lib/GovernorVotesCompQuorumFraction.sol";
 import {
   GovernorTimelockCompound,
   ICompoundTimelock
@@ -22,7 +22,7 @@ import {GovernorCompatibilityBravo} from
 /// @notice The upgraded Radworks Governor: Bravo compatible and extended from OpenZeppelin.
 contract RadworksGovernor is
   Governor,
-  GovernorVotesComp,
+  GovernorVotesCompQuorumFraction,
   GovernorTimelockCompound,
   GovernorSettings
 {
@@ -47,9 +47,6 @@ contract RadworksGovernor is
   /// @notice Human readable name of this Governor.
   string private constant GOVERNOR_NAME = "Radworks Governor Bravo";
 
-  /// @notice The number of RAD (in "wei") that must participate in a vote to meet quorum threshold.
-  uint256 private constant QUORUM = 4_000_000e18; // 4,000,000 RAD
-
   /// @param _initialVotingDelay The initial voting delay this Governor will enforce.
   /// @param _initialVotingPeriod The initial voting period this Governor will enforce.
   /// @param _initialProposalThreshold The initial number of RAD required to submit
@@ -59,6 +56,7 @@ contract RadworksGovernor is
     uint256 _initialVotingPeriod,
     uint256 _initialProposalThreshold
   )
+    GovernorVotesCompQuorumFraction(4)
     GovernorVotesComp(RAD_TOKEN)
     GovernorSettings(_initialVotingDelay, _initialVotingPeriod, _initialProposalThreshold)
     GovernorTimelockCompound(TIMELOCK)
@@ -177,8 +175,13 @@ contract RadworksGovernor is
   /// @notice The amount of RAD required to meet the quorum threshold for a proposal
   /// as of a given block.
   /// @dev Our implementation ignores the block number parameter and returns a constant.
-  function quorum(uint256) public pure override returns (uint256) {
-    return QUORUM;
+  function quorum(uint256 timepoint)
+    public
+    view
+    override(IGovernor, GovernorVotesCompQuorumFraction)
+    returns (uint256)
+  {
+    return GovernorVotesCompQuorumFraction.quorum(timepoint);
   }
 
   /// @inheritdoc Governor
