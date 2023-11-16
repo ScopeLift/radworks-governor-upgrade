@@ -7,6 +7,7 @@ import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
 import {IGovernorAlpha} from "src/interfaces/IGovernorAlpha.sol";
 import {RadworksGovernorTest} from "test/helpers/RadworksGovernorTest.sol";
 import {ProposalTest} from "test/helpers/ProposalTest.sol";
+import {ProposalBuilder} from "test/helpers/Proposal.sol";
 import "../script/DeployInput.sol";
 
 abstract contract Constructor is RadworksGovernorTest {
@@ -210,7 +211,8 @@ abstract contract Propose is ProposalTest {
   function testFuzz_NewGovernorCanUpdateSettingsViaSuccessfulProposal(
     uint256 _newDelay,
     uint256 _newVotingPeriod,
-    uint256 _newProposalThreshold
+    uint256 _newProposalThreshold,
+    uint256 _newQuorumNumerator
   ) public {
     vm.assume(_newDelay != governorBravo.votingDelay());
     vm.assume(_newVotingPeriod != governorBravo.votingPeriod());
@@ -220,12 +222,13 @@ abstract contract Propose is ProposalTest {
     _newDelay = bound(_newDelay, 0, 50_000); // about a week at 1 block per 12s
     _newVotingPeriod = bound(_newVotingPeriod, 1, 200_000); // about a month
     _newProposalThreshold = bound(_newProposalThreshold, 0, 42 ether);
+    _newQuorumNumerator = bound(_newQuorumNumerator, 0, 99);
 
     _upgradeToBravoGovernor();
 
-    address[] memory _targets = new address[](3);
-    uint256[] memory _values = new uint256[](3);
-    bytes[] memory _calldatas = new bytes[](3);
+    address[] memory _targets = new address[](4);
+    uint256[] memory _values = new uint256[](4);
+    bytes[] memory _calldatas = new bytes[](4);
     string memory _description = "Update governance settings";
 
     _targets[0] = address(governorBravo);
@@ -237,6 +240,10 @@ abstract contract Propose is ProposalTest {
     _targets[2] = address(governorBravo);
     _calldatas[2] =
       _buildProposalData("setProposalThreshold(uint256)", abi.encode(_newProposalThreshold));
+
+    _targets[3] = address(governorBravo);
+    _calldatas[3] =
+      _buildProposalData("updateQuorumNumerator(uint256)", abi.encode(_newQuorumNumerator));
 
     // Submit the new proposal
     vm.prank(PROPOSER);
@@ -275,6 +282,11 @@ abstract contract Propose is ProposalTest {
     assertEq(governorBravo.votingDelay(), _newDelay);
     assertEq(governorBravo.votingPeriod(), _newVotingPeriod);
     assertEq(governorBravo.proposalThreshold(), _newProposalThreshold);
+    assertEq(governorBravo.quorumNumerator(block.number), _newQuorumNumerator);
+    assertEq(
+      governorBravo.quorum(block.number),
+      (governorBravo.token().totalSupply() * _newQuorumNumerator) / 100
+    );
   }
 
   function testFuzz_NewGovernorCanPassMixedProposal(
