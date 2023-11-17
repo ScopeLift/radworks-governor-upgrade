@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.20;
 
 contract Constants {
   address constant GOVERNOR_ALPHA = 0x690e775361AD66D1c4A25d89da9fCd639F5198eD;
