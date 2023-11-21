@@ -11,7 +11,6 @@ import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
 import {ICompoundTimelock} from
   "@openzeppelin/contracts/governance/extensions/GovernorTimelockCompound.sol";
 import {GovernorSettings} from "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
-
 import {
   GovernorTimelockCompound,
   ICompoundTimelock
@@ -26,6 +25,8 @@ contract RadworksGovernor is
   GovernorTimelockCompound,
   GovernorSettings
 {
+  event QuorumSet(uint256 newQuorum);
+
   error VoteWouldExceedWeight(uint256 weight);
 
   struct ProposalVote {
@@ -33,6 +34,9 @@ contract RadworksGovernor is
     uint256 forVotes;
     uint256 abstainVotes;
   }
+
+  /// @notice The number of RAD (in "wei") that must participate in a vote to meet quorum threshold.
+  uint256 _quorum = 4_000_000e18; // 4,000,000 RAD (4% of total supply)
 
   /// @notice The address of the RAD token on Ethereum mainnet from which this Governor derives
   /// delegated voting weight.
@@ -47,23 +51,23 @@ contract RadworksGovernor is
   /// @notice Human readable name of this Governor.
   string private constant GOVERNOR_NAME = "Radworks Governor Bravo";
 
-  /// @notice The number of RAD (in "wei") that must participate in a vote to meet quorum threshold.
-  uint256 private constant QUORUM = 4_000_000e18; // 4,000,000 RAD
-
   /// @param _initialVotingDelay The initial voting delay this Governor will enforce.
   /// @param _initialVotingPeriod The initial voting period this Governor will enforce.
   /// @param _initialProposalThreshold The initial number of RAD required to submit
-  /// a proposal this Governor will enforce.
+  /// @param _initialQuorum The initial number of RAD required to meet quorum threshold
   constructor(
     uint256 _initialVotingDelay,
     uint256 _initialVotingPeriod,
-    uint256 _initialProposalThreshold
+    uint256 _initialProposalThreshold,
+    uint256 _initialQuorum
   )
     GovernorVotesComp(RAD_TOKEN)
     GovernorSettings(_initialVotingDelay, _initialVotingPeriod, _initialProposalThreshold)
     GovernorTimelockCompound(TIMELOCK)
     Governor(GOVERNOR_NAME)
-  {}
+  {
+    _quorum = _initialQuorum;
+  }
 
   /// @dev Mapping from proposal ID to vote tallies for that proposal.
   mapping(uint256 => ProposalVote) private _proposalVotes;
@@ -174,11 +178,17 @@ contract RadworksGovernor is
     return GovernorTimelockCompound.state(proposalId);
   }
 
-  /// @notice The amount of RAD required to meet the quorum threshold for a proposal
-  /// as of a given block.
+  /// @notice The amount of RAD required to meet the quorum threshold for a proposal.
   /// @dev Our implementation ignores the block number parameter and returns a constant.
-  function quorum(uint256) public pure override returns (uint256) {
-    return QUORUM;
+  function quorum(uint256) public view override returns (uint256) {
+    return _quorum;
+  }
+
+  /// @notice Set the amount of RAD required to meet the quorum threshold for a proposal.
+  /// @dev This function is only callable by executed governance proposals (thus, the Timelock).
+  function setQuorum(uint256 _newQuorum) public onlyGovernance {
+    emit QuorumSet(_newQuorum);
+    _quorum = _newQuorum;
   }
 
   /// @inheritdoc Governor
