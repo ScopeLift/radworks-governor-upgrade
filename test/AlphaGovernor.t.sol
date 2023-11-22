@@ -130,7 +130,7 @@ abstract contract AlphaGovernorTest is ProposalTest {
 
     // Counter-intuitively, the Governor (not the Timelock) must hold the ETH.
     // See the deployed GovernorAlpha, line 281:
-    //   https://etherscan.io/address/0x31c8EAcBFFdD875c74b94b077895Bd78CF1E64A3#code
+    //   https://etherscan.io/address/0x690e775361AD66D1c4A25d89da9fCd639F5198eD#code
     // The governor transfers ETH to the Timelock in the process of executing
     // the proposal. The Timelock then just passes that ETH along.
     vm.deal(address(governorAlpha), _amount);
