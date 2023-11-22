@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.20;
 
-import {console2} from "forge-std/console2.sol";
-
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {ERC20VotesComp} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20VotesComp.sol";
 import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
