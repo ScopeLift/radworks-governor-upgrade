@@ -8,7 +8,7 @@ import {IGovernorAlpha} from "src/interfaces/IGovernorAlpha.sol";
 import {RadworksGovernorTest} from "test/helpers/RadworksGovernorTest.sol";
 import {ProposalTest} from "test/helpers/ProposalTest.sol";
 
-abstract contract AlphaGovernorTest is ProposalTest {
+abstract contract RadworksGovernorAlpha is ProposalTest {
   function test_GovernorUpgradeProposalIsSubmittedCorrectly() public {
     // Proposal has been recorded
     assertEq(governorAlpha.proposalCount(), initialProposalCount + 1);
@@ -205,7 +205,7 @@ abstract contract AlphaGovernorTest is ProposalTest {
   }
 }
 
-contract UpgradeTests is AlphaGovernorTest {
+contract UpgradeTests is RadworksGovernorAlpha {
   function _useDeployedGovernorBravo() internal pure override returns (bool) {
     return false;
   }
