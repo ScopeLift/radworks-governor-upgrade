@@ -35,8 +35,9 @@ abstract contract ProposalTest is RadworksGovernorTest {
     RadworksGovernorTest.setUp();
 
     if (_useDeployedGovernorBravo()) {
-      // Use the actual live proposal data when it gets put on chain
-      upgradeProposalId = 17; // assume this is the next proposal
+      // Use the actual live proposal data expected to be on chain
+      // if Radworks Governor Bravo has already deployed
+      upgradeProposalId = 17; // assume this is the next proposal (as most recent is 16)
       // Since the proposal was already submitted, the count before its submissions is one less
       initialProposalCount = governorAlpha.proposalCount() - 1;
     } else {
