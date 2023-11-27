@@ -9,6 +9,6 @@ contract TestableProposeScript is Propose {
   /// proposer. This is needed when testing with live proposal data, because the Governor only
   /// allows each proposer to have one live proposal at a time.
   function overrideProposerForTests(address _testProposer) external {
-    PROPOSER = _testProposer;
+    PROPOSER_ADDRESS = _testProposer;
   }
 }

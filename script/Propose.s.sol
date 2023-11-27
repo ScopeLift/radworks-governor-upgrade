@@ -7,21 +7,20 @@ import {ICompoundTimelock} from
 
 import {RadworksGovernor} from "src/RadworksGovernor.sol";
 import {IGovernorAlpha} from "src/interfaces/IGovernorAlpha.sol";
+import {Constants} from "test/Constants.sol";
 
-contract Propose is Script {
-  IGovernorAlpha constant GOVERNOR_ALPHA =
-    IGovernorAlpha(0x690e775361AD66D1c4A25d89da9fCd639F5198eD);
-
-  // TODO: resolve the list of large delegates with tally
-  address PROPOSER = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b; // cloudhead.eth
+/// @notice Script to submit the proposal to upgrade Radworks governor.
+contract Propose is Script, Constants {
+  IGovernorAlpha constant radworksGovernorAlpha = IGovernorAlpha(GOVERNOR_ALPHA);
+  address PROPOSER_ADDRESS = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b; // cloudhead.eth
 
   function propose(RadworksGovernor _newGovernor) internal returns (uint256 _proposalId) {
     address[] memory _targets = new address[](2);
     uint256[] memory _values = new uint256[](2);
-    string[] memory _signatures = new string [](2);
+    string[] memory _signatures = new string[](2);
     bytes[] memory _calldatas = new bytes[](2);
 
-    _targets[0] = GOVERNOR_ALPHA.timelock();
+    _targets[0] = radworksGovernorAlpha.timelock();
     _values[0] = 0;
     _signatures[0] = "setPendingAdmin(address)";
     _calldatas[0] = abi.encode(address(_newGovernor));
@@ -31,12 +30,12 @@ contract Propose is Script {
     _signatures[1] = "__acceptAdmin()";
     _calldatas[1] = "";
 
-    return GOVERNOR_ALPHA.propose(
+    return radworksGovernorAlpha.propose(
       _targets, _values, _signatures, _calldatas, "Upgrade to Governor Bravo"
     );
   }
 
-  /// @dev After the new Governor is deployed on mainnet, this can move from a parameter to a const
+  /// @dev After the new Governor is deployed on mainnet, `_newGovernor` can become a const
   function run(RadworksGovernor _newGovernor) public returns (uint256 _proposalId) {
     // The expectation is the key loaded here corresponds to the address of the `proposer` above.
     // When running as a script, broadcast will fail if the key is not correct.
@@ -46,7 +45,7 @@ contract Propose is Script {
     );
     vm.rememberKey(_proposerKey);
 
-    vm.startBroadcast(PROPOSER);
+    vm.startBroadcast(PROPOSER_ADDRESS);
     _proposalId = propose(_newGovernor);
     vm.stopBroadcast();
     return _proposalId;

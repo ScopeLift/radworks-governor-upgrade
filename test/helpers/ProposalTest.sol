@@ -44,7 +44,7 @@ abstract contract ProposalTest is RadworksGovernorTest {
 
       TestableProposeScript _proposeScript = new TestableProposeScript();
       // We override the deployer to use an alternate delegate, because in this context,
-      // lonser.eth already has a live proposal
+      // the PROPOSER_ADDRESS used already has a live proposal
       _proposeScript.overrideProposerForTests(0x69dceee155C31eA0c8354F90BDD65C12FaF5A00a);
 
       upgradeProposalId = _proposeScript.run(governorBravo);
