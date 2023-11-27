@@ -202,7 +202,7 @@ abstract contract Propose is ProposalTest {
     // Craft a new proposal to send the token.
     address[] memory _targets = new address[](1);
     uint256[] memory _values = new uint256[](1);
-    string[] memory _signatures = new string [](1);
+    string[] memory _signatures = new string[](1);
     bytes[] memory _calldatas = new bytes[](1);
 
     _targets[0] = address(_token);
@@ -294,40 +294,6 @@ abstract contract Propose is ProposalTest {
   function testFuzz_NewGovernorCanPassProposalToSendETH(uint256 _amount, address _receiver) public {
     _assumeReceiver(_receiver);
     vm.deal(TIMELOCK, _amount);
-    uint256 _timelockETHBalance = TIMELOCK.balance;
-    uint256 _receiverETHBalance = _receiver.balance;
-
-    _upgradeToBravoGovernor();
-
-    // Craft a new proposal to send ETH.
-    address[] memory _targets = new address[](1);
-    uint256[] memory _values = new uint256[](1);
-    _targets[0] = _receiver;
-    _values[0] = _amount;
-
-    _queueAndVoteAndExecuteProposalWithBravoGovernor(
-      _targets,
-      _values,
-      new bytes[](1), // There is no calldata for a plain ETH call.
-      "Transfer some ETH via the new Governor",
-      FOR // Vote/suppport type.
-    );
-
-    // Ensure the ETH was transferred.
-    assertEq(_receiver.balance, _receiverETHBalance + _amount);
-    assertEq(TIMELOCK.balance, _timelockETHBalance - _amount);
-  }
-
-  // @dev The timelock has no ETH as of 2023-11-08
-  // see here: https://etherscan.io/address/0x8dA8f82d2BbDd896822de723F55D6EdF416130ba
-  function testFuzz_NewGovernorCanPassProposalToSendETHWithNoDeal(
-    uint256 _amount,
-    address _receiver
-  ) public {
-    // Deal 30 ETH to the Timelock so it has ETH to send.
-    vm.deal(TIMELOCK, 30 ether);
-    _assumeReceiver(_receiver);
-    _amount = bound(_amount, 0, 30 ether);
     uint256 _timelockETHBalance = TIMELOCK.balance;
     uint256 _receiverETHBalance = _receiver.balance;
 
@@ -655,7 +621,7 @@ abstract contract Propose is ProposalTest {
     // Create a new proposal to send the token.
     _vars.alphaTargets = new address[](1);
     _vars.alphaValues = new uint256[](1);
-    _vars.alphaSignatures = new string [](1);
+    _vars.alphaSignatures = new string[](1);
     _vars.alphaCalldatas = new bytes[](1);
     _vars.alphaDescription = "Transfer some tokens from the new Governor";
 
