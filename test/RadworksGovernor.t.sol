@@ -223,15 +223,13 @@ abstract contract Propose is ProposalTest {
     assertEq(_token.balanceOf(_receiver), _receiverTokenBalance, "Receiver balance is incorrect");
   }
 
-  ////
+  //
   // Bravo proposal tests
-  ////
-  function testFuzz_NewGovernorCanReceiveNewProposal(uint256 _poolAmount, address _poolReceiver)
-    public
-  {
-    _assumeReceiver(_poolReceiver);
+  //
+  function testFuzz_NewGovernorCanReceiveNewProposal(uint256 _amount, address _receiver) public {
+    _assumeReceiver(_receiver);
     _upgradeToBravoGovernor();
-    _submitTokenSendProposalToGovernorBravo(RAD_TOKEN, _poolAmount, _poolReceiver);
+    _submitTokenSendProposalToGovernorBravo(RAD_TOKEN, _amount, _receiver);
   }
 
   function testFuzz_NewGovernorCanDefeatProposal(uint256 _amount, address _receiver, uint256 _seed)
