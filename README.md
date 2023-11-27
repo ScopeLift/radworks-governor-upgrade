@@ -90,4 +90,4 @@ forge script script/Propose.s.sol --sig "run(address)" NEW_GOVERNOR_ADDRESS --rp
 
 ### Testing issues
 
-This repo heavily leverages fuzz fork tests causing a significant number of RPC requests to be made. We leverage caching to minimize the number of RPC calls after the tests are run for the first time, but running these tests for the first may cause timeouts and consume a significant number of RPC calls.
+This repo heavily leverages fuzz fork tests causing a significant number of RPC requests to be made. We leverage caching to minimize the number of RPC calls after the tests are run for the first time, but running these tests for the first time may cause timeouts and consume a significant number of RPC calls.
