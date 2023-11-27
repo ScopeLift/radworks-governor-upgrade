@@ -46,7 +46,7 @@ scopelint check
 
 #### Scopelint spec compatibility
 
-Some tests will not show up when running `scopelint spec` because the methods they are testing are inherited in the `RadworksGovernor`. In order to get an accurate picture of the tests with `scopelint spec` add an explicit `propose` method to the `RadworksGovernor`. It should look like this:
+Some tests will not show up when running `scopelint spec` because the methods they are testing are inherited in the `RadworksGovernor` and `scopelint` does not show tests on inherited methods. In order to get an accurate picture of the tests with `scopelint spec` add an explicit `propose` method to the `RadworksGovernor`. It should look like this:
 
 ```
  function propose(
