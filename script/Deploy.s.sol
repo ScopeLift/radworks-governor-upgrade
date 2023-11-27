@@ -17,8 +17,9 @@ contract Deploy is DeployInput, Script {
 
   function run() public returns (RadworksGovernor) {
     vm.startBroadcast(deployerPrivateKey);
-    RadworksGovernor _governor =
-    new RadworksGovernor(INITIAL_VOTING_DELAY, INITIAL_VOTING_PERIOD, INITIAL_PROPOSAL_THRESHOLD, INITIAL_QUORUM_VALUE);
+    RadworksGovernor _governor = new RadworksGovernor(
+      INITIAL_VOTING_DELAY, INITIAL_VOTING_PERIOD, INITIAL_PROPOSAL_THRESHOLD, INITIAL_QUORUM_VALUE
+    );
     vm.stopBroadcast();
 
     return _governor;
