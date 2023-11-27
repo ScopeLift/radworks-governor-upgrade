@@ -54,6 +54,7 @@ contract RadworksGovernor is
   /// @param _initialVotingDelay The initial voting delay this Governor will enforce.
   /// @param _initialVotingPeriod The initial voting period this Governor will enforce.
   /// @param _initialProposalThreshold The initial number of RAD required to submit
+  /// a proposal this Governor will enforce.
   /// @param _initialQuorum The initial number of RAD required to meet quorum threshold
   constructor(
     uint256 _initialVotingDelay,
