@@ -11,7 +11,7 @@ import {Constants} from "test/Constants.sol";
 
 /// @notice Script to submit the proposal to upgrade Radworks governor.
 contract Propose is Script, Constants {
-  IGovernorAlpha constant radworksGovernorAlpha = IGovernorAlpha(GOVERNOR_ALPHA);
+  IGovernorAlpha constant RADWORK_GOVERNOR_ALPHA = IGovernorAlpha(GOVERNOR_ALPHA);
   address PROPOSER_ADDRESS = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b; // cloudhead.eth
 
   function propose(RadworksGovernor _newGovernor) internal returns (uint256 _proposalId) {
@@ -20,7 +20,7 @@ contract Propose is Script, Constants {
     string[] memory _signatures = new string[](2);
     bytes[] memory _calldatas = new bytes[](2);
 
-    _targets[0] = radworksGovernorAlpha.timelock();
+    _targets[0] = RADWORK_GOVERNOR_ALPHA.timelock();
     _values[0] = 0;
     _signatures[0] = "setPendingAdmin(address)";
     _calldatas[0] = abi.encode(address(_newGovernor));
@@ -30,7 +30,7 @@ contract Propose is Script, Constants {
     _signatures[1] = "__acceptAdmin()";
     _calldatas[1] = "";
 
-    return radworksGovernorAlpha.propose(
+    return RADWORK_GOVERNOR_ALPHA.propose(
       _targets, _values, _signatures, _calldatas, "Upgrade to Governor Bravo"
     );
   }
