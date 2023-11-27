@@ -318,40 +318,39 @@ abstract contract Propose is ProposalTest {
     assertEq(TIMELOCK.balance, _timelockETHBalance - _amount);
   }
 
-  // TODO: This test commented out as the timelock has no ETH as of 2023-11-08
+  // @dev The timelock has no ETH as of 2023-11-08
   // see here: https://etherscan.io/address/0x8dA8f82d2BbDd896822de723F55D6EdF416130ba
+  function testFuzz_NewGovernorCanPassProposalToSendETHWithNoDeal(
+    uint256 _amount,
+    address _receiver
+  ) public {
+    // Deal 30 ETH to the Timelock so it has ETH to send.
+    vm.deal(TIMELOCK, 30 ether);
+    _assumeReceiver(_receiver);
+    _amount = bound(_amount, 0, 30 ether);
+    uint256 _timelockETHBalance = TIMELOCK.balance;
+    uint256 _receiverETHBalance = _receiver.balance;
 
-  // function testFuzz_NewGovernorCanPassProposalToSendETHWithNoDeal(
-  //   uint256 _amount,
-  //   address _receiver
-  // ) public {
-  //   _assumeReceiver(_receiver);
-  //   // The Timelock currently has approximately 30.4 ETH
-  //   // https://etherscan.io/address/0x42cd8312D2BCe04277dD5161832460e95b24262E
-  //   _amount = bound(_amount, 0, 30.4 ether);
-  //   uint256 _timelockETHBalance = TIMELOCK.balance;
-  //   uint256 _receiverETHBalance = _receiver.balance;
+    _upgradeToBravoGovernor();
 
-  //   _upgradeToBravoGovernor();
+    // Craft a new proposal to send ETH.
+    address[] memory _targets = new address[](1);
+    uint256[] memory _values = new uint256[](1);
+    _targets[0] = _receiver;
+    _values[0] = _amount;
 
-  //   // Craft a new proposal to send ETH.
-  //   address[] memory _targets = new address[](1);
-  //   uint256[] memory _values = new uint256[](1);
-  //   _targets[0] = _receiver;
-  //   _values[0] = _amount;
+    _queueAndVoteAndExecuteProposalWithBravoGovernor(
+      _targets,
+      _values,
+      new bytes[](1), // There is no calldata for a plain ETH call.
+      "Transfer some ETH via the new Governor",
+      FOR // Vote/suppport type.
+    );
 
-  //   _queueAndVoteAndExecuteProposalWithBravoGovernor(
-  //     _targets,
-  //     _values,
-  //     new bytes[](1), // There is no calldata for a plain ETH call.
-  //     "Transfer some ETH via the new Governor",
-  //     FOR // Vote/suppport type.
-  //   );
-
-  //   // Ensure the ETH was transferred.
-  //   assertEq(_receiver.balance, _receiverETHBalance + _amount);
-  //   assertEq(TIMELOCK.balance, _timelockETHBalance - _amount);
-  // }
+    // Ensure the ETH was transferred.
+    assertEq(_receiver.balance, _receiverETHBalance + _amount);
+    assertEq(TIMELOCK.balance, _timelockETHBalance - _amount);
+  }
 
   function testFuzz_NewGovernorCanPassProposalToSendETHWithTokens(
     uint256 _amountETH,
