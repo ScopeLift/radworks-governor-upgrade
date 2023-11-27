@@ -183,7 +183,7 @@ abstract contract RadworksGovernorAlpha is ProposalTest {
     // Craft a new proposal to send the token.
     address[] memory _targets = new address[](1);
     uint256[] memory _values = new uint256[](1);
-    string[] memory _signatures = new string [](1);
+    string[] memory _signatures = new string[](1);
     bytes[] memory _calldatas = new bytes[](1);
 
     _targets[0] = address(_token);
