@@ -52,10 +52,10 @@ abstract contract RadworksGovernorTest is Test, DeployInput, Constants {
       delegates.push(_delegate);
     }
 
+    // After the Radworks Governor Bravo is deployed, the actual deployed contract can be tested.
+    // Before then, we'll use the Deploy script to deploy a new instance of the contract in the test
+    // fork.
     if (_useDeployedGovernorBravo()) {
-      // The Radworks contract bravo governor hasn't deployed to mainnet yet, so we're let's not
-      // test this yet
-      // using Deploy in this repo.
       governorBravo = RadworksGovernor(payable(DEPLOYED_BRAVO_GOVERNOR));
     } else {
       // We still want to exercise the script in these tests to give us
