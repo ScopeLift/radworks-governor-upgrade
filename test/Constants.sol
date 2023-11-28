@@ -5,6 +5,7 @@ contract Constants {
   address constant GOVERNOR_ALPHA = 0x690e775361AD66D1c4A25d89da9fCd639F5198eD;
   address payable constant RAD_TOKEN = payable(0x31c8EAcBFFdD875c74b94b077895Bd78CF1E64A3);
   address constant TIMELOCK = 0x8dA8f82d2BbDd896822de723F55D6EdF416130ba;
+  address constant DRIPS = 0xd0Dd053392db676D57317CD4fe96Fc2cCf42D0b4;
 
   // TODO: resolve the list of large delegates with tallyaddress
   address constant PROPOSER = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b; // cloudhead.eth
