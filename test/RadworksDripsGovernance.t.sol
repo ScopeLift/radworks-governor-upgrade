@@ -1,11 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.20;
 
-import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
-import {ERC20VotesComp} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20VotesComp.sol";
 import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
-import {IGovernorAlpha} from "src/interfaces/IGovernorAlpha.sol";
-import {RadworksGovernorTest} from "test/helpers/RadworksGovernorTest.sol";
 import {ProposalTest} from "test/helpers/ProposalTest.sol";
 
 abstract contract RadworksDripsGovernance is ProposalTest {
