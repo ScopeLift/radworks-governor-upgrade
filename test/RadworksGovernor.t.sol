@@ -403,6 +403,10 @@ abstract contract Propose is ProposalTest {
     uint256 _newVotingPeriod,
     uint256 _newProposalThreshold
   ) public {
+    vm.assume(_newDelay != governorBravo.votingDelay());
+    vm.assume(_newVotingPeriod != governorBravo.votingPeriod());
+    vm.assume(_newProposalThreshold != governorBravo.proposalThreshold());
+
     // The upper bounds are arbitrary here.
     _newDelay = bound(_newDelay, 0, 50_000); // about a week at 1 block per 12s
     _newVotingPeriod = bound(_newVotingPeriod, 1, 200_000); // about a month
