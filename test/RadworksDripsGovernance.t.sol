@@ -40,6 +40,12 @@ abstract contract RadworksDripsGovernance is ProposalTest {
     );
   }
 
+  function _proposeNewAdminViaGovernance(address _newAdmin) internal {
+    _proposePassAndExecuteDripsProposal(
+      "Propose new Admin", _buildProposalData("proposeNewAdmin(address)", abi.encode(_newAdmin))
+    );
+  }
+
   function testFuzz_grantPauserOnDrips(address _newPauser) public {
     _assumeNotTimelock(_newPauser);
     vm.assume(!drips.isPauser(_newPauser));
@@ -115,6 +121,26 @@ abstract contract RadworksDripsGovernance is ProposalTest {
     _queueAndVoteAndExecuteProposalWithBravoGovernor(
       _targets, _values, _calldatas, _description, FOR
     );
+
+    // Ensure the admin role has been renounced
+    assertEq(drips.admin(), address(0));
+  }
+
+  function test_proposeNewAdminViaGovernance(address _newAdmin) public {
+    assummeNotTimelock(_newAdmin);
+    _proposeNewAdminViaGovernance(_newAdmin);
+
+    // Ensure the new admin has been proposed
+    assertEq(drips.proposedAdmin(), _newAdmin);
+
+    // Ensure the new admin can accept the admin role
+    vm.prank(_newAdmin);
+    drips.acceptAdmin();
+    assertEq(drips.admin(), _newAdmin);
+
+    // Ensure the new admin can renounce admin role (which only an admin can do)
+    vm.prank(_newAdmin);
+    drips.renounceAdmin();
 
     // Ensure the admin role has been renounced
     assertEq(drips.admin(), address(0));
