@@ -481,6 +481,12 @@ abstract contract Propose is ProposalTest {
     assertEq(governorBravo.quorum(block.number), _newQuorumValue);
   }
 
+  function testFuzz_setQuorumFailWhenCalledByNonGovernance(uint256 _newQuorumValue) public {
+    vm.assume(_newQuorumValue != governorBravo.quorum(block.number));
+    vm.expectRevert("Governor: onlyGovernance");
+    governorBravo.setQuorum(_newQuorumValue);
+  }
+
   function testFuzz_NewGovernorCanPassMixedProposal(
     uint256 _amount,
     address _receiver,
