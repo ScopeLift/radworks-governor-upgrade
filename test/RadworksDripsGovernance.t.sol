@@ -2,7 +2,24 @@
 pragma solidity ^0.8.20;
 
 import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import {ProposalTest} from "test/helpers/ProposalTest.sol";
+
+import {console2} from "forge-std/console2.sol";
+
+/// @dev This contract used in the testing of using governance to upgrade the Drips protocol
+/// It has just enough infrastructure to be installed as a new implementation of the Drips proxy.
+contract DripsUpgradeContract is UUPSUpgradeable {
+  function _authorizeUpgrade(address) internal override {}
+
+  function proxiableUUID() external view virtual override notDelegated returns (bytes32) {
+    return _IMPLEMENTATION_SLOT;
+  }
+
+  function implementation() external view returns (address impl) {
+    return _getImplementation();
+  }
+}
 
 abstract contract RadworksDripsGovernance is ProposalTest {
   function setUp() public virtual override(ProposalTest) {
@@ -41,8 +58,31 @@ abstract contract RadworksDripsGovernance is ProposalTest {
   }
 
   function _proposeNewAdminViaGovernance(address _newAdmin) internal {
-    _proposePassAndExecuteDripsProposal(
+    (
+      address[] memory _targets,
+      uint256[] memory _values,
+      bytes[] memory _calldatas,
+      string memory _description
+    ) = _buildDripsGovernanceProposal(
       "Propose new Admin", _buildProposalData("proposeNewAdmin(address)", abi.encode(_newAdmin))
+    );
+    _queueAndVoteAndExecuteProposalWithBravoGovernor(
+      _targets, _values, _calldatas, _description, FOR
+    );
+  }
+
+  function _performDripsUpgradeViaGovernance(address _newImplementation) internal {
+    (
+      address[] memory _targets,
+      uint256[] memory _values,
+      bytes[] memory _calldatas,
+      string memory _description
+    ) = _buildDripsGovernanceProposal(
+      "Propose upgrade to new implementation",
+      _buildProposalData("upgradeTo(address)", abi.encode(_newImplementation))
+    );
+    _queueAndVoteAndExecuteProposalWithBravoGovernor(
+      _targets, _values, _calldatas, _description, FOR
     );
   }
 
@@ -144,6 +184,14 @@ abstract contract RadworksDripsGovernance is ProposalTest {
 
     // Ensure the admin role has been renounced
     assertEq(drips.admin(), address(0));
+  }
+
+  function test_UpgradeDripsViaGovernance() public {
+    DripsUpgradeContract _newImplementation = new DripsUpgradeContract();
+    _performDripsUpgradeViaGovernance(address(_newImplementation));
+
+    // // Ensure the new implementation has been set
+    assertEq(drips.implementation(), address(_newImplementation));
   }
 }
 
