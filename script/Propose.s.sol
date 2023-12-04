@@ -8,27 +8,33 @@ import {ICompoundTimelock} from
 import {RadworksGovernor} from "src/RadworksGovernor.sol";
 import {IGovernorAlpha} from "src/interfaces/IGovernorAlpha.sol";
 import {Constants} from "test/Constants.sol";
+import {DeployInput} from "script/DeployInput.sol";
 
 /// @notice Script to submit the proposal to upgrade Radworks governor.
-contract Propose is Script, Constants {
+contract Propose is Script, Constants, DeployInput {
   IGovernorAlpha constant RADWORK_GOVERNOR_ALPHA = IGovernorAlpha(GOVERNOR_ALPHA);
   address PROPOSER_ADDRESS = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b; // cloudhead.eth
 
   function propose(RadworksGovernor _newGovernor) internal returns (uint256 _proposalId) {
-    address[] memory _targets = new address[](2);
-    uint256[] memory _values = new uint256[](2);
-    string[] memory _signatures = new string[](2);
-    bytes[] memory _calldatas = new bytes[](2);
+    address[] memory _targets = new address[](3);
+    uint256[] memory _values = new uint256[](3);
+    string[] memory _signatures = new string[](3);
+    bytes[] memory _calldatas = new bytes[](3);
 
-    _targets[0] = RADWORK_GOVERNOR_ALPHA.timelock();
+    _targets[0] = RAD_TOKEN;
     _values[0] = 0;
-    _signatures[0] = "setPendingAdmin(address)";
-    _calldatas[0] = abi.encode(address(_newGovernor));
+    _signatures[0] = "transfer(address,uint256)";
+    _calldatas[0] = abi.encode(SCOPELIFT_ADDRESS, SCOPELIFT_AMOUNT);
 
-    _targets[1] = address(_newGovernor);
+    _targets[1] = RADWORK_GOVERNOR_ALPHA.timelock();
     _values[1] = 0;
-    _signatures[1] = "__acceptAdmin()";
-    _calldatas[1] = "";
+    _signatures[1] = "setPendingAdmin(address)";
+    _calldatas[1] = abi.encode(address(_newGovernor));
+
+    _targets[2] = address(_newGovernor);
+    _values[2] = 0;
+    _signatures[2] = "__acceptAdmin()";
+    _calldatas[2] = "";
 
     return RADWORK_GOVERNOR_ALPHA.propose(
       _targets, _values, _signatures, _calldatas, "Upgrade to Governor Bravo"

@@ -72,13 +72,12 @@ abstract contract Propose is ProposalTest {
   ) public {
     IERC20 _token = _randomERC20Token(_seed);
     _assumeReceiver(_receiver);
+    _upgradeToBravoGovernor();
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
 
     // bound by the number of tokens the timelock currently controls
     _amount = bound(_amount, 0, _timelockTokenBalance);
     uint256 _initialTokenBalance = _token.balanceOf(_receiver);
-
-    _upgradeToBravoGovernor();
 
     (
       address[] memory _targets,
@@ -131,6 +130,7 @@ abstract contract Propose is ProposalTest {
   ) public {
     IERC20 _token = _randomERC20Token(_seed);
     _assumeReceiver(_receiver);
+    _upgradeToBravoGovernor();
 
     vm.deal(TIMELOCK, _amountETH);
     uint256 _timelockETHBalance = TIMELOCK.balance;
@@ -140,8 +140,6 @@ abstract contract Propose is ProposalTest {
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
     uint256 _receiverTokenBalance = _token.balanceOf(_receiver);
     _amountToken = bound(_amountToken, 0, _timelockTokenBalance);
-
-    _upgradeToBravoGovernor();
 
     // Craft a new proposal to send ETH and tokens.
     address[] memory _targets = new address[](2);
@@ -280,13 +278,14 @@ abstract contract Propose is ProposalTest {
   ) public {
     IERC20 _token = _randomERC20Token(_seed);
     _assumeReceiver(_receiver);
+    _upgradeToBravoGovernor();
+
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
 
     // bound by the number of tokens the timelock currently controls
     _amount = bound(_amount, 0, _timelockTokenBalance);
     uint256 _initialTokenBalance = _token.balanceOf(_receiver);
 
-    _upgradeToBravoGovernor();
     (
       uint256 _newProposalId,
       address[] memory _targets,
