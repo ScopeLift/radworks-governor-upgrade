@@ -10,61 +10,33 @@ abstract contract RadworksDripsGovernance is ProposalTest {
     _upgradeToBravoGovernor();
   }
 
-  function _proposePassAndExecuteDripsProposal(string memory _description, bytes memory _callData)
-    internal
-  {
-    address[] memory _targets = new address[](1);
-    uint256[] memory _values = new uint256[](1);
-    bytes[] memory _calldatas = new bytes[](1);
-
-    _targets[0] = DRIPS;
-    _calldatas[0] = _callData;
-
-    // Submit the new proposal
-    vm.prank(PROPOSER);
-    uint256 _newProposalId = governorBravo.propose(_targets, _values, _calldatas, _description);
-
-    // Ensure proposal is in the expected state
-    IGovernor.ProposalState _state = governorBravo.state(_newProposalId);
-    assertEq(_state, IGovernor.ProposalState.Pending);
-
-    _jumpToActiveProposal(_newProposalId);
-
-    _delegatesCastVoteOnBravoGovernor(_newProposalId, FOR);
-    _jumpToVotingComplete(_newProposalId);
-
-    // Ensure the proposal has succeeded
-    _state = governorBravo.state(_newProposalId);
-    assertEq(_state, IGovernor.ProposalState.Succeeded);
-
-    // Queue the proposal
-    governorBravo.queue(_targets, _values, _calldatas, keccak256(bytes(_description)));
-
-    // Ensure the proposal is queued
-    _state = governorBravo.state(_newProposalId);
-    assertEq(_state, IGovernor.ProposalState.Queued);
-
-    _jumpPastProposalEta(_newProposalId);
-
-    // Execute the proposal
-    governorBravo.execute(_targets, _values, _calldatas, keccak256(bytes(_description)));
-
-    // Ensure the proposal is executed
-    _state = governorBravo.state(_newProposalId);
-    assertEq(_state, IGovernor.ProposalState.Executed);
-  }
-
   function _grantNewPauserViaGovernance(address _newPauser) internal {
-    _proposePassAndExecuteDripsProposal(
+    (
+      address[] memory _targets,
+      uint256[] memory _values,
+      bytes[] memory _calldatas,
+      string memory _description
+    ) = _buildDripsGovernanceProposal(
       "Grant Pauser role to an address",
       _buildProposalData("grantPauser(address)", abi.encode(_newPauser))
+    );
+    _queueAndVoteAndExecuteProposalWithBravoGovernor(
+      _targets, _values, _calldatas, _description, FOR
     );
   }
 
   function _revokePauserViaGovernance(address _newPauser) internal {
-    _proposePassAndExecuteDripsProposal(
+    (
+      address[] memory _targets,
+      uint256[] memory _values,
+      bytes[] memory _calldatas,
+      string memory _description
+    ) = _buildDripsGovernanceProposal(
       "Revoke Pauser role from an address",
       _buildProposalData("revokePauser(address)", abi.encode(_newPauser))
+    );
+    _queueAndVoteAndExecuteProposalWithBravoGovernor(
+      _targets, _values, _calldatas, _description, FOR
     );
   }
 
@@ -110,8 +82,16 @@ abstract contract RadworksDripsGovernance is ProposalTest {
   }
 
   function test_renounceAdminViaGovernance() public {
-    _proposePassAndExecuteDripsProposal(
+    (
+      address[] memory _targets,
+      uint256[] memory _values,
+      bytes[] memory _calldatas,
+      string memory _description
+    ) = _buildDripsGovernanceProposal(
       "Renounce Admin role", _buildProposalData("renounceAdmin()", abi.encode())
+    );
+    _queueAndVoteAndExecuteProposalWithBravoGovernor(
+      _targets, _values, _calldatas, _description, FOR
     );
 
     // Ensure the admin role has been renounced

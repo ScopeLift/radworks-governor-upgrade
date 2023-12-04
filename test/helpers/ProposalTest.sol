@@ -196,6 +196,26 @@ abstract contract ProposalTest is RadworksGovernorTest {
     return abi.encodePacked(bytes4(keccak256(bytes(_signature))), _calldata);
   }
 
+  function _buildDripsGovernanceProposal(string memory _description, bytes memory _callData)
+    internal
+    pure
+    returns (
+      address[] memory _targets,
+      uint256[] memory _values,
+      bytes[] memory _calldata,
+      string memory _returnedDescription
+    )
+  {
+    // Craft a new proposal to peform a Drips governance operation.
+    _targets = new address[](1);
+    _values = new uint256[](1);
+    _calldata = new bytes[](1);
+
+    _targets[0] = DRIPS;
+    _calldata[0] = _callData;
+    _returnedDescription = _description;
+  }
+
   function _jumpToActiveProposal(uint256 _proposalId) internal {
     uint256 _snapshot = governorBravo.proposalSnapshot(_proposalId);
     vm.roll(_snapshot + 1);
