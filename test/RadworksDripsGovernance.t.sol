@@ -51,6 +51,12 @@ abstract contract RadworksDripsGovernance is ProposalTest {
 
     // Ensure the the list of pausers got longer by 1
     assertEq(_originalPausers.length + 1, drips.allPausers().length);
+  }
+
+  function testFuzz_grantedPauserCanPauseAndUnPause(address _newPauser) public {
+    assummeNotTimelock(_newPauser);
+
+    _grantNewPauserViaGovernance(_newPauser);
 
     // Ensure the new pauser can pause the DRIPS protocol
     vm.prank(_newPauser);
@@ -74,11 +80,26 @@ abstract contract RadworksDripsGovernance is ProposalTest {
 
     // Ensure the new pauser has subsequently had pauser role revoked
     assertEq(drips.isPauser(_newPauser), false);
+  }
+
+  function testFuzz_revertWhenRevokedPauserAttemptsPause(address _newPauser) public {
+    assummeNotTimelock(_newPauser);
+    _grantNewPauserViaGovernance(_newPauser);
+
+    // Ensure the new pauser has been granted pauser role
+    assertEq(drips.isPauser(_newPauser), true);
+
+    _revokePauserViaGovernance(_newPauser);
 
     // Ensure the newly-revoked pauser cannot pause the DRIPS protocol
     vm.prank(_newPauser);
     vm.expectRevert("Caller not the admin or a pauser");
     drips.pause();
+
+    // Ensure that the Timelock contract is can still pause the DRIPS protocol
+    vm.prank(TIMELOCK);
+    drips.pause();
+    assertEq(drips.isPauser(_newPauser), false);
   }
 
   function test_renounceAdminViaGovernance() public {
