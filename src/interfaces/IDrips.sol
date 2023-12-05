@@ -144,8 +144,8 @@ interface IDrips {
     StreamReceiver[] memory currReceivers,
     int128 balanceDelta,
     StreamReceiver[] memory newReceivers,
-    uint32 maxEndHint1,
-    uint32 maxEndHint2
+    uint32 FirstMaxEndHint,
+    uint32 SecondMaxEndHint
   ) external returns (int128 realBalanceDelta);
   function split(uint256 accountId, address erc20, SplitsReceiver[] memory currReceivers)
     external
