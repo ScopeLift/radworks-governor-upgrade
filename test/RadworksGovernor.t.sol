@@ -71,13 +71,16 @@ abstract contract Propose is ProposalTest {
     uint256 _seed
   ) public {
     IERC20 _token = _randomERC20Token(_seed);
+    // @dev: RAD_TOKEN handled in seperate test because bravo upgrade changes RAD token balances
+    vm.assume(_token != IERC20(RAD_TOKEN));
     _assumeReceiver(_receiver);
-    _upgradeToBravoGovernor();
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
 
     // bound by the number of tokens the timelock currently controls
     _amount = bound(_amount, 0, _timelockTokenBalance);
     uint256 _initialTokenBalance = _token.balanceOf(_receiver);
+
+    _upgradeToBravoGovernor();
 
     (
       address[] memory _targets,
@@ -93,6 +96,37 @@ abstract contract Propose is ProposalTest {
     // Ensure the tokens have been transferred
     assertEq(_token.balanceOf(_receiver), _initialTokenBalance + _amount);
     assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - _amount);
+  }
+
+  function testFuzz_NewGovernorCanPassProposalToSendRadTokens(uint256 _amount, address _receiver)
+    public
+  {
+    // @dev: RAD_TOKEN handled specially as bravo upgrade changes RAD token balances
+    IERC20 _token = IERC20(RAD_TOKEN);
+    _assumeReceiver(_receiver);
+    uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
+
+    // bound by the number of tokens the timelock currently controls
+    // (less the amount to be sent to ScopeLift on the Bravo upgrade)
+    _amount = bound(_amount, 0, _timelockTokenBalance - SCOPELIFT_AMOUNT);
+    uint256 _initialTokenBalance = _token.balanceOf(_receiver);
+
+    _upgradeToBravoGovernor();
+
+    (
+      address[] memory _targets,
+      uint256[] memory _values,
+      bytes[] memory _calldatas,
+      string memory _description
+    ) = _buildTokenSendProposal(address(_token), _amount, _receiver);
+
+    _queueAndVoteAndExecuteProposalWithBravoGovernor(
+      _targets, _values, _calldatas, _description, FOR
+    );
+
+    // Ensure the tokens have been transferred
+    assertEq(_token.balanceOf(_receiver), _initialTokenBalance + _amount);
+    assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - (_amount + SCOPELIFT_AMOUNT));
   }
 
   function testFuzz_NewGovernorCanPassProposalToSendETH(uint256 _amount, address _receiver) public {
@@ -129,8 +163,9 @@ abstract contract Propose is ProposalTest {
     uint256 _seed
   ) public {
     IERC20 _token = _randomERC20Token(_seed);
+    // @dev: RAD_TOKEN handled in seperate test because bravo upgrade changes RAD token balances
+    vm.assume(_token != IERC20(RAD_TOKEN));
     _assumeReceiver(_receiver);
-    _upgradeToBravoGovernor();
 
     vm.deal(TIMELOCK, _amountETH);
     uint256 _timelockETHBalance = TIMELOCK.balance;
@@ -145,6 +180,8 @@ abstract contract Propose is ProposalTest {
     address[] memory _targets = new address[](2);
     uint256[] memory _values = new uint256[](2);
     bytes[] memory _calldatas = new bytes[](2);
+
+    _upgradeToBravoGovernor();
 
     // First call transfers tokens.
     _targets[0] = address(_token);
@@ -170,6 +207,57 @@ abstract contract Propose is ProposalTest {
     // Ensure the tokens were transferred.
     assertEq(_token.balanceOf(_receiver), _receiverTokenBalance + _amountToken);
     assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - _amountToken);
+  }
+
+  function testFuzz_NewGovernorCanPassProposalToSendETHWithRadTokens(
+    uint256 _amountETH,
+    uint256 _amountToken,
+    address _receiver
+  ) public {
+    // @dev: RAD_TOKEN handled specially as bravo upgrade changes RAD token balances
+    IERC20 _token = IERC20(RAD_TOKEN);
+    _assumeReceiver(_receiver);
+
+    vm.deal(TIMELOCK, _amountETH);
+    uint256 _timelockETHBalance = TIMELOCK.balance;
+    uint256 _receiverETHBalance = _receiver.balance;
+
+    // Bound _amountToken by the number of tokens the timelock currently controls.
+    uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
+    uint256 _receiverTokenBalance = _token.balanceOf(_receiver);
+    _amountToken = bound(_amountToken, 0, _timelockTokenBalance - SCOPELIFT_AMOUNT);
+
+    // Craft a new proposal to send ETH and tokens.
+    address[] memory _targets = new address[](2);
+    uint256[] memory _values = new uint256[](2);
+    bytes[] memory _calldatas = new bytes[](2);
+
+    _upgradeToBravoGovernor();
+
+    // First call transfers tokens.
+    _targets[0] = address(_token);
+    _calldatas[0] =
+      _buildProposalData("transfer(address,uint256)", abi.encode(_receiver, _amountToken));
+
+    // Second call sends ETH.
+    _targets[1] = _receiver;
+    _values[1] = _amountETH;
+
+    _queueAndVoteAndExecuteProposalWithBravoGovernor(
+      _targets,
+      _values,
+      _calldatas,
+      "Transfer tokens and ETH via the new Governor",
+      FOR // Vote/suppport type.
+    );
+
+    // Ensure the ETH was transferred.
+    assertEq(_receiver.balance, _receiverETHBalance + _amountETH);
+    assertEq(TIMELOCK.balance, _timelockETHBalance - _amountETH);
+
+    // Ensure the tokens were transferred.
+    assertEq(_token.balanceOf(_receiver), _receiverTokenBalance + _amountToken);
+    assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - (_amountToken + SCOPELIFT_AMOUNT));
   }
 
   function testFuzz_NewGovernorFailedProposalsCantSendETH(uint256 _amount, address _receiver)
@@ -271,20 +359,22 @@ abstract contract Propose is ProposalTest {
     assertEq(governorBravo.proposalThreshold(), _newProposalThreshold);
   }
 
-  function testFuzz_NewGovernorCanPassMixedProposal(
+  function testFuzz_NewGovernorCanPassMixedProposalOfTokens(
     uint256 _amount,
     address _receiver,
     uint256 _seed
   ) public {
     IERC20 _token = _randomERC20Token(_seed);
+    // @dev: RAD_TOKEN handled in seperate test because bravo upgrade changes RAD token balances
+    vm.assume(_token != IERC20(RAD_TOKEN));
     _assumeReceiver(_receiver);
-    _upgradeToBravoGovernor();
-
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
 
     // bound by the number of tokens the timelock currently controls
     _amount = bound(_amount, 0, _timelockTokenBalance);
     uint256 _initialTokenBalance = _token.balanceOf(_receiver);
+
+    _upgradeToBravoGovernor();
 
     (
       uint256 _newProposalId,
@@ -341,6 +431,77 @@ abstract contract Propose is ProposalTest {
     // Ensure the tokens have been transferred
     assertEq(_token.balanceOf(_receiver), _initialTokenBalance + _amount);
     assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - _amount);
+  }
+
+  function testFuzz_NewGovernorCanPassMixedProposalOfRadTokens(uint256 _amount, address _receiver)
+    public
+  {
+    // @dev: RAD_TOKEN handled specially as bravo upgrade changes RAD token balances
+    IERC20 _token = IERC20(RAD_TOKEN);
+    _assumeReceiver(_receiver);
+    uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
+
+    // bound by the number of tokens the timelock currently controls
+    _amount = bound(_amount, 0, _timelockTokenBalance - SCOPELIFT_AMOUNT);
+    uint256 _initialTokenBalance = _token.balanceOf(_receiver);
+
+    _upgradeToBravoGovernor();
+
+    (
+      uint256 _newProposalId,
+      address[] memory _targets,
+      uint256[] memory _values,
+      bytes[] memory _calldatas,
+      string memory _description
+    ) = _submitTokenSendProposalToGovernorBravo(address(_token), _amount, _receiver);
+
+    _jumpToActiveProposal(_newProposalId);
+
+    // Delegates vote with a mix of For/Against/Abstain with For winning.
+    // TODO: Need more delegates for this.. pool together had more!
+    vm.prank(delegates[0].addr);
+    governorBravo.castVote(_newProposalId, FOR);
+    vm.prank(delegates[1].addr);
+    governorBravo.castVote(_newProposalId, FOR);
+    vm.prank(delegates[2].addr);
+    governorBravo.castVote(_newProposalId, FOR);
+    vm.prank(delegates[3].addr);
+    governorBravo.castVote(_newProposalId, AGAINST);
+    vm.prank(delegates[4].addr);
+    governorBravo.castVote(_newProposalId, ABSTAIN);
+    vm.prank(delegates[5].addr);
+    governorBravo.castVote(_newProposalId, AGAINST);
+
+    // The vote should pass. We are asserting against the raw delegate voting
+    // weight as a sanity check. In the event that the fork block is changed and
+    // voting weights are materially different than they were when the test was
+    // written, we want this assertion to fail.
+    assertGt(
+      delegates[0].votes + delegates[1].votes + delegates[2].votes, // FOR votes.
+      delegates[3].votes + delegates[5].votes // AGAINST votes.
+    );
+
+    _jumpToVotingComplete(_newProposalId);
+
+    // Ensure the proposal has succeeded
+    IGovernor.ProposalState _state = governorBravo.state(_newProposalId);
+    assertEq(_state, IGovernor.ProposalState.Succeeded);
+
+    // Queue the proposal
+    governorBravo.queue(_targets, _values, _calldatas, keccak256(bytes(_description)));
+
+    _jumpPastProposalEta(_newProposalId);
+
+    // Execute the proposal
+    governorBravo.execute(_targets, _values, _calldatas, keccak256(bytes(_description)));
+
+    // Ensure the proposal is executed
+    _state = governorBravo.state(_newProposalId);
+    assertEq(_state, IGovernor.ProposalState.Executed);
+
+    // Ensure the tokens have been transferred
+    assertEq(_token.balanceOf(_receiver), _initialTokenBalance + _amount);
+    assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - (_amount + SCOPELIFT_AMOUNT));
   }
 
   function testFuzz_NewGovernorCanDefeatMixedProposal(
