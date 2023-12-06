@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
+/// @dev This interface file for the DRIPS protocol was created via the command:
+///  `cast interface 0xb0C9B6D67608bE300398d0e4FB0cCa3891E1B33F`
 interface IDrips {
   type StreamConfig is uint256;
 
