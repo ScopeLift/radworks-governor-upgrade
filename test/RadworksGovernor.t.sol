@@ -466,7 +466,8 @@ abstract contract Propose is ProposalTest {
     _jumpPastProposalEta(_newProposalId);
 
     // Execute the proposal, expecting the emit of the QuorumSet event.
-    vm.expectEmit(false, false, false, true);
+    // vm.expectEmit(false, false, false, true);
+    vm.expectEmit();
     emit QuorumSet(_newQuorumValue);
     governorBravo.execute(_targets, _values, _calldatas, keccak256(bytes(_description)));
 

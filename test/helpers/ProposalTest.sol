@@ -57,7 +57,7 @@ abstract contract ProposalTest is RadworksGovernorTest {
   // a cheat for fuzzing addresses that are payable only
   // Why is this no longer in standard cheats? JJF
   // see https://github.com/foundry-rs/foundry/issues/3631
-  function assumePayable(address addr) internal virtual {
+  function assumePayable(address addr) internal virtual override {
     (bool success,) = payable(addr).call{value: 0}("");
     vm.assume(success);
   }
@@ -75,7 +75,7 @@ abstract contract ProposalTest is RadworksGovernorTest {
       // https://etherscan.io/address/0x31c8EAcBFFdD875c74b94b077895Bd78CF1E64A3#code
       && _receiver > address(0)
     );
-    assumeNoPrecompiles(_receiver);
+    assumeNotPrecompile(_receiver);
   }
 
   function _randomERC20Token(uint256 _seed) internal pure returns (IERC20 _token) {
