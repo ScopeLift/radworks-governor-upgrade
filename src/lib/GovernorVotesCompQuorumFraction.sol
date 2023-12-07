@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.9.0)
-// (governance/extensions/GovernorVotesQuorumFraction.sol)
+// (Based on OpenZeppelin governance/extensions/GovernorVotesQuorumFraction.sol)
 
 pragma solidity ^0.8.0;
 
@@ -75,6 +74,7 @@ abstract contract GovernorVotesCompQuorumFraction is GovernorVotesComp {
    * `supply * numerator / denominator`.
    */
   function quorum(uint256 timepoint) public view virtual override returns (uint256) {
+    // @dev: 'token.totalSupply()` ignores timepoint, different from 'GovernorVotesQuorumFraction'
     return (token.totalSupply() * quorumNumerator(timepoint)) / quorumDenominator();
   }
 
