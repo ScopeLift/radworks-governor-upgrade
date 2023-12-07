@@ -2,7 +2,10 @@
   evm_version = "paris"
   optimizer = true
   optimizer_runs = 10_000_000
-  remappings = ["@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts"]
+  remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts",
+    "@solmate/utils/=lib/solmate/src/utils",
+  ]
   solc_version = "0.8.20"
   verbosity = 3
 
@@ -15,6 +18,9 @@
   invariant = { runs = 10 }
   # Speed up compilation and tests during development.
   optimizer = false
+
+[rpc_endpoints]
+  mainnet = "${MAINNET_RPC_URL}"
 
 [fmt]
   bracket_spacing = false

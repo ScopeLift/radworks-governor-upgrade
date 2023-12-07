@@ -47,11 +47,8 @@ contract RadworksGovernor is
   /// @notice Human readable name of this Governor.
   string private constant GOVERNOR_NAME = "Radworks Governor Bravo";
 
-  /// @notice The number of RAD (in "wei") that must participate in a vote for it to meet quorum
-  /// threshold.
-  ///
-  /// TODO: placeholder
-  uint256 private constant QUORUM = 100_000e18; // 100,000 RAD
+  /// @notice The number of RAD (in "wei") that must participate in a vote to meet quorum threshold.
+  uint256 private constant QUORUM = 4_000_000e18; // 4,000,000 RAD
 
   /// @param _initialVotingDelay The initial voting delay this Governor will enforce.
   /// @param _initialVotingPeriod The initial voting period this Governor will enforce.
@@ -113,7 +110,7 @@ contract RadworksGovernor is
 
   /// @inheritdoc Governor
   function _voteSucceeded(uint256 proposalId) internal view virtual override returns (bool) {
-    ProposalVote storage proposalVote = _proposalVotes[proposalId];
+    ProposalVote memory proposalVote = _proposalVotes[proposalId];
 
     return proposalVote.forVotes > proposalVote.againstVotes;
   }
