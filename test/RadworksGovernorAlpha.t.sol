@@ -225,8 +225,18 @@ abstract contract RadworksGovernorAlphaTest is ProposalTest {
   }
 }
 
-contract RadworksGovernorUpgradeTest is RadworksGovernorAlphaTest {
+// Run the tests using a version of the Governor deployed by the Deploy script
+
+contract AlphaTestWithDeployScriptGovernor is RadworksGovernorAlphaTest {
   function _useDeployedGovernorBravo() internal pure override returns (bool) {
     return false;
+  }
+}
+
+// Run the tests using the deployed Governor Bravo
+
+contract AlphaTestWithOnChainGovernor is RadworksGovernorAlphaTest {
+  function _useDeployedGovernorBravo() internal pure override returns (bool) {
+    return DEPLOYED_BRAVO_GOVERNOR != address(0);
   }
 }
