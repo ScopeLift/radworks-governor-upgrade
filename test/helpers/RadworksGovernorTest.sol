@@ -32,11 +32,9 @@ abstract contract RadworksGovernorTest is Test, DeployInput, Constants {
 
     vm.createSelectFork(vm.rpcUrl("mainnet"), _forkBlock);
 
-    // Taken from https://www.tally.xyz/gov/radworks/delegates?sort=voting_power_desc.
     // If you update these delegates (including updating order in the array),
     // make sure to update any tests that reference specific delegates. The last delegate is the
     // proposer and lower in the voting power than the above link.
-    // TODO: resolve the list of large delegates with tally
     Delegate[] memory _delegates = new Delegate[](6);
     _delegates[0] = Delegate("Delegate 0", 0x288703AA4e65dD244680FaefA742C488b7CD1992, 4.24e6);
     _delegates[1] = Delegate("Delegate 1", 0x69dceee155C31eA0c8354F90BDD65C12FaF5A00a, 1.86e6);
