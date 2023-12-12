@@ -733,8 +733,19 @@ abstract contract _Execute is ProposalTest {
     );
   }
 
+  function test_TimelockCanPauseDrips() public {
+    vm.prank(TIMELOCK);
+    drips.pause();
+    assertTrue(drips.isPaused());
+
+    // Ensure the Timelock can also un-pause the DRIPS protocol
+    vm.prank(TIMELOCK);
+    drips.unpause();
+    assertFalse(drips.isPaused());
+  }
+
   function testFuzz_CanGrantPauserOnDrips(address _newPauser) public {
-    assummeNotTimelock(_newPauser);
+    // assummeNotTimelock(_newPauser);
     address[] memory _originalPausers = drips.allPausers();
 
     _grantNewPauserViaGovernance(_newPauser);
