@@ -733,7 +733,7 @@ abstract contract _Execute is ProposalTest {
     );
   }
 
-  function testFuzz_grantPauserOnDrips(address _newPauser) public {
+  function testFuzz_CanGrantPauserOnDrips(address _newPauser) public {
     assummeNotTimelock(_newPauser);
     address[] memory _originalPausers = drips.allPausers();
 
@@ -746,7 +746,7 @@ abstract contract _Execute is ProposalTest {
     assertEq(_originalPausers.length + 1, drips.allPausers().length);
   }
 
-  function testFuzz_grantedPauserCanPauseAndUnPause(address _newPauser) public {
+  function testFuzz_GrantedPauserCanPauseAndUnPause(address _newPauser) public {
     assummeNotTimelock(_newPauser);
 
     _grantNewPauserViaGovernance(_newPauser);
@@ -762,7 +762,7 @@ abstract contract _Execute is ProposalTest {
     assertFalse(drips.isPaused());
   }
 
-  function testFuzz_revokePauserOnDrips(address _newPauser) public {
+  function testFuzz_CanRevokePauserOnDrips(address _newPauser) public {
     assummeNotTimelock(_newPauser);
     _grantNewPauserViaGovernance(_newPauser);
 
@@ -775,7 +775,7 @@ abstract contract _Execute is ProposalTest {
     assertEq(drips.isPauser(_newPauser), false);
   }
 
-  function testFuzz_revertWhenRevokedPauserAttemptsPause(address _newPauser) public {
+  function testFuzz_RevertWhen_PauseAfterRevoke(address _newPauser) public {
     assummeNotTimelock(_newPauser);
     _grantNewPauserViaGovernance(_newPauser);
 
@@ -795,7 +795,7 @@ abstract contract _Execute is ProposalTest {
     assertEq(drips.isPauser(_newPauser), false);
   }
 
-  function test_renounceAdminViaGovernance() public {
+  function test_CanRenounceAdminViaGovernance() public {
     (
       address[] memory _targets,
       uint256[] memory _values,
@@ -812,7 +812,7 @@ abstract contract _Execute is ProposalTest {
     assertEq(drips.admin(), address(0));
   }
 
-  function testFuzz_proposeNewAdminViaGovernance(address _newAdmin) public {
+  function testFuzz_CanProposeNewAdminViaGovernance(address _newAdmin) public {
     assummeNotTimelock(_newAdmin);
     _proposeNewAdminViaGovernance(_newAdmin);
 
