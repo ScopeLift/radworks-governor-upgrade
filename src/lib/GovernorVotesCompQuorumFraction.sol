@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// (Based on OpenZeppelin governance/extensions/GovernorVotesQuorumFraction.sol)
+// Based on OpenZeppelin GovernorVotesQuorumFraction.sol found at:
+//  https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/governance/extensions/GovernorVotesQuorumFraction.sol
 
 pragma solidity ^0.8.0;
 
@@ -12,8 +13,8 @@ import "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 /**
  * @dev Extension of {Governor} for voting weight extraction from an {GovernorVotesComp} token and a
- * quorum
- * expressed as a fraction of the total supply.
+ * quorum expressed as a fraction of the total supply.
+ * Original contract referenced above inherited from {GovernorVotes}
  */
 abstract contract GovernorVotesCompQuorumFraction is GovernorVotesComp {
   using Checkpoints for Checkpoints.Trace224;
@@ -104,7 +105,7 @@ abstract contract GovernorVotesCompQuorumFraction is GovernorVotesComp {
   function _updateQuorumNumerator(uint256 newQuorumNumerator) internal virtual {
     require(
       newQuorumNumerator <= quorumDenominator(),
-      "GovernorVotesQuorumFraction: quorumNumerator over quorumDenominator"
+      "GovernorVotesCompQuorumFraction: quorumNumerator over quorumDenominator"
     );
 
     uint256 oldQuorumNumerator = quorumNumerator();
