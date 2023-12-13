@@ -745,7 +745,6 @@ abstract contract _Execute is ProposalTest {
   }
 
   function testFuzz_CanGrantPauserOnDrips(address _newPauser) public {
-    // assummeNotTimelock(_newPauser);
     address[] memory _originalPausers = drips.allPausers();
 
     _grantNewPauserViaGovernance(_newPauser);
