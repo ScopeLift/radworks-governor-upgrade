@@ -71,7 +71,7 @@ abstract contract Propose is ProposalTest {
     uint256 _seed
   ) public {
     IERC20 _token = _randomERC20Token(_seed);
-    // @dev: RAD_TOKEN handled in seperate test because bravo upgrade changes RAD token balances
+    // RAD_TOKEN handled in seperate test because bravo upgrade changes RAD token balances
     vm.assume(_token != IERC20(RAD_TOKEN));
     _assumeReceiver(_receiver);
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
@@ -101,14 +101,14 @@ abstract contract Propose is ProposalTest {
   function testFuzz_NewGovernorCanPassProposalToSendRadTokens(uint256 _amount, address _receiver)
     public
   {
-    // @dev: RAD_TOKEN handled specially as bravo upgrade changes RAD token balances
+    // RAD_TOKEN handled specially as bravo upgrade changes RAD token balances
     IERC20 _token = IERC20(RAD_TOKEN);
     _assumeReceiver(_receiver);
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
 
     // bound by the number of tokens the timelock currently controls
     // (less the amount to be sent to ScopeLift on the Bravo upgrade)
-    _amount = bound(_amount, 0, _timelockTokenBalance - SCOPELIFT_AMOUNT);
+    _amount = bound(_amount, 0, _timelockTokenBalance - SCOPELIFT_PAYMENT);
     uint256 _initialTokenBalance = _token.balanceOf(_receiver);
 
     _upgradeToBravoGovernor();
@@ -126,7 +126,7 @@ abstract contract Propose is ProposalTest {
 
     // Ensure the tokens have been transferred
     assertEq(_token.balanceOf(_receiver), _initialTokenBalance + _amount);
-    assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - (_amount + SCOPELIFT_AMOUNT));
+    assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - (_amount + SCOPELIFT_PAYMENT));
   }
 
   function testFuzz_NewGovernorCanPassProposalToSendETH(uint256 _amount, address _receiver) public {
@@ -163,7 +163,7 @@ abstract contract Propose is ProposalTest {
     uint256 _seed
   ) public {
     IERC20 _token = _randomERC20Token(_seed);
-    // @dev: RAD_TOKEN handled in seperate test because bravo upgrade changes RAD token balances
+    // RAD_TOKEN handled in separate test because bravo upgrade changes RAD token balances
     vm.assume(_token != IERC20(RAD_TOKEN));
     _assumeReceiver(_receiver);
 
@@ -197,7 +197,7 @@ abstract contract Propose is ProposalTest {
       _values,
       _calldatas,
       "Transfer tokens and ETH via the new Governor",
-      FOR // Vote/suppport type.
+      FOR // Vote/support type.
     );
 
     // Ensure the ETH was transferred.
@@ -209,7 +209,7 @@ abstract contract Propose is ProposalTest {
     assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - _amountToken);
   }
 
-  function testFuzz_NewGovernorCanPassProposalToSendETHWithRadTokens(
+  function testFuzz_NewGovernorCanPassProposalToSendETHAndRadTokens(
     uint256 _amountETH,
     uint256 _amountToken,
     address _receiver
@@ -225,7 +225,7 @@ abstract contract Propose is ProposalTest {
     // Bound _amountToken by the number of tokens the timelock currently controls.
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
     uint256 _receiverTokenBalance = _token.balanceOf(_receiver);
-    _amountToken = bound(_amountToken, 0, _timelockTokenBalance - SCOPELIFT_AMOUNT);
+    _amountToken = bound(_amountToken, 0, _timelockTokenBalance - SCOPELIFT_PAYMENT);
 
     // Craft a new proposal to send ETH and tokens.
     address[] memory _targets = new address[](2);
@@ -257,7 +257,7 @@ abstract contract Propose is ProposalTest {
 
     // Ensure the tokens were transferred.
     assertEq(_token.balanceOf(_receiver), _receiverTokenBalance + _amountToken);
-    assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - (_amountToken + SCOPELIFT_AMOUNT));
+    assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - (_amountToken + SCOPELIFT_PAYMENT));
   }
 
   function testFuzz_NewGovernorFailedProposalsCantSendETH(uint256 _amount, address _receiver)
@@ -442,7 +442,7 @@ abstract contract Propose is ProposalTest {
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
 
     // bound by the number of tokens the timelock currently controls
-    _amount = bound(_amount, 0, _timelockTokenBalance - SCOPELIFT_AMOUNT);
+    _amount = bound(_amount, 0, _timelockTokenBalance - SCOPELIFT_PAYMENT);
     uint256 _initialTokenBalance = _token.balanceOf(_receiver);
 
     _upgradeToBravoGovernor();
@@ -501,7 +501,7 @@ abstract contract Propose is ProposalTest {
 
     // Ensure the tokens have been transferred
     assertEq(_token.balanceOf(_receiver), _initialTokenBalance + _amount);
-    assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - (_amount + SCOPELIFT_AMOUNT));
+    assertEq(_token.balanceOf(TIMELOCK), _timelockTokenBalance - (_amount + SCOPELIFT_PAYMENT));
   }
 
   function testFuzz_NewGovernorCanDefeatMixedProposal(

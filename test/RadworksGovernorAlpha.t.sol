@@ -37,7 +37,7 @@ abstract contract RadworksGovernorAlphaTest is ProposalTest {
     assertEq(_signatures[1], "setPendingAdmin(address)");
     assertEq(_signatures[2], "__acceptAdmin()");
     assertEq(_calldatas.length, 3);
-    assertEq(_calldatas[0], abi.encode(SCOPELIFT_ADDRESS, SCOPELIFT_AMOUNT));
+    assertEq(_calldatas[0], abi.encode(SCOPELIFT_ADDRESS, SCOPELIFT_PAYMENT));
     assertEq(_calldatas[1], abi.encode(address(governorBravo)));
     assertEq(_calldatas[2], "");
   }
@@ -130,12 +130,12 @@ abstract contract RadworksGovernorAlphaTest is ProposalTest {
     // Ensure the Timelock has transferred the RAD tokens to the ScopeLift address
     assertEq(
       ERC20VotesComp(RAD_TOKEN).balanceOf(TIMELOCK),
-      _timelockRADBalance - SCOPELIFT_AMOUNT,
+      _timelockRADBalance - SCOPELIFT_PAYMENT,
       "Timelock RAD balance is incorrect"
     );
     assertEq(
       ERC20VotesComp(RAD_TOKEN).balanceOf(SCOPELIFT_ADDRESS),
-      _scopeLiftRADBalance + SCOPELIFT_AMOUNT,
+      _scopeLiftRADBalance + SCOPELIFT_PAYMENT,
       "ScopeLift RAD balance is incorrect"
     );
   }

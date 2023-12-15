@@ -10,5 +10,5 @@ contract DeployInput {
   address constant SCOPELIFT_ADDRESS = 0x5C04E7808455ee0e22c2773328C151d0DD79dC62;
 
   // Number of RAD tokens to transfer to ScopeLift upon upgrade execution
-  uint256 constant SCOPELIFT_AMOUNT = 5000e18;
+  uint256 constant SCOPELIFT_PAYMENT = 5000e18;
 }

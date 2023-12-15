@@ -24,7 +24,7 @@ contract Propose is Script, Constants, DeployInput {
     _targets[0] = RAD_TOKEN;
     _values[0] = 0;
     _signatures[0] = "transfer(address,uint256)";
-    _calldatas[0] = abi.encode(SCOPELIFT_ADDRESS, SCOPELIFT_AMOUNT);
+    _calldatas[0] = abi.encode(SCOPELIFT_ADDRESS, SCOPELIFT_PAYMENT);
 
     _targets[1] = RADWORK_GOVERNOR_ALPHA.timelock();
     _values[1] = 0;
