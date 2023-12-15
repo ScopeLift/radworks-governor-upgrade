@@ -24,18 +24,22 @@ abstract contract RadworksGovernorAlphaTest is ProposalTest {
       string[] memory _signatures,
       bytes[] memory _calldatas
     ) = governorAlpha.getActions(upgradeProposalId);
-    assertEq(_targets.length, 2);
-    assertEq(_targets[0], TIMELOCK);
-    assertEq(_targets[1], address(governorBravo));
-    assertEq(_values.length, 2);
+    assertEq(_targets.length, 3);
+    assertEq(_targets[0], RAD_TOKEN);
+    assertEq(_targets[1], TIMELOCK);
+    assertEq(_targets[2], address(governorBravo));
+    assertEq(_values.length, 3);
     assertEq(_values[0], 0);
     assertEq(_values[1], 0);
-    assertEq(_signatures.length, 2);
-    assertEq(_signatures[0], "setPendingAdmin(address)");
-    assertEq(_signatures[1], "__acceptAdmin()");
-    assertEq(_calldatas.length, 2);
-    assertEq(_calldatas[0], abi.encode(address(governorBravo)));
-    assertEq(_calldatas[1], "");
+    assertEq(_values[2], 0);
+    assertEq(_signatures.length, 3);
+    assertEq(_signatures[0], "transfer(address,uint256)");
+    assertEq(_signatures[1], "setPendingAdmin(address)");
+    assertEq(_signatures[2], "__acceptAdmin()");
+    assertEq(_calldatas.length, 3);
+    assertEq(_calldatas[0], abi.encode(SCOPELIFT_ADDRESS, SCOPELIFT_PAYMENT));
+    assertEq(_calldatas[1], abi.encode(address(governorBravo)));
+    assertEq(_calldatas[2], "");
   }
 
   function test_UpgradeProposalActiveAfterDelay() public {
@@ -106,6 +110,10 @@ abstract contract RadworksGovernorAlphaTest is ProposalTest {
   }
 
   function test_UpgradeProposalCanBeExecutedAfterDelay() public {
+    // get the starting Timelock and ScopeLift RAD balances
+    uint256 _timelockRADBalance = ERC20VotesComp(RAD_TOKEN).balanceOf(TIMELOCK);
+    uint256 _scopeLiftRADBalance = ERC20VotesComp(RAD_TOKEN).balanceOf(SCOPELIFT_ADDRESS);
+
     _passAndQueueUpgradeProposal();
     _jumpPastProposalEta();
 
@@ -118,6 +126,18 @@ abstract contract RadworksGovernorAlphaTest is ProposalTest {
 
     // Ensure the governorBravo is now the admin of the timelock
     assertEq(timelock.admin(), address(governorBravo));
+
+    // Ensure the Timelock has transferred the RAD tokens to the ScopeLift address
+    assertEq(
+      ERC20VotesComp(RAD_TOKEN).balanceOf(TIMELOCK),
+      _timelockRADBalance - SCOPELIFT_PAYMENT,
+      "Timelock RAD balance is incorrect"
+    );
+    assertEq(
+      ERC20VotesComp(RAD_TOKEN).balanceOf(SCOPELIFT_ADDRESS),
+      _scopeLiftRADBalance + SCOPELIFT_PAYMENT,
+      "ScopeLift RAD balance is incorrect"
+    );
   }
 
   //
@@ -172,13 +192,13 @@ abstract contract RadworksGovernorAlphaTest is ProposalTest {
     _assumeReceiver(_receiver);
     IERC20 _token = _randomERC20Token(_seed);
 
+    // Pass and execute the proposal to upgrade the Governor
+    _upgradeToBravoGovernor();
+
     uint256 _receiverTokenBalance = _token.balanceOf(_receiver);
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
     // bound by the number of tokens the timelock currently controls
     _amount = bound(_amount, 0, _timelockTokenBalance);
-
-    // Pass and execute the proposal to upgrade the Governor
-    _upgradeToBravoGovernor();
 
     // Craft a new proposal to send the token.
     address[] memory _targets = new address[](1);
