@@ -148,7 +148,7 @@ abstract contract Propose is ProposalTest {
       _values,
       new bytes[](1), // There is no calldata for a plain ETH call.
       "Transfer some ETH via the new Governor",
-      FOR // Vote/suppport type.
+      FOR // Vote/support type.
     );
 
     // Ensure the ETH was transferred.
@@ -248,7 +248,7 @@ abstract contract Propose is ProposalTest {
       _values,
       _calldatas,
       "Transfer tokens and ETH via the new Governor",
-      FOR // Vote/suppport type.
+      FOR // Vote/support type.
     );
 
     // Ensure the ETH was transferred.
