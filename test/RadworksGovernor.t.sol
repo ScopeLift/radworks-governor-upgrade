@@ -1030,8 +1030,9 @@ abstract contract _Execute is ProposalTest {
   }
 
   function testFuzz_CanGrantPauserOnDrips(address _newPauser) public {
-    address[] memory _originalPausers = drips.allPausers();
+    vm.assume(!drips.isPauser(_newPauser));
 
+    address[] memory _originalPausers = drips.allPausers();
     _grantNewPauserViaGovernance(_newPauser);
 
     // Ensure the new pauser has been granted pauser role
