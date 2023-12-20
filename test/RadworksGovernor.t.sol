@@ -1042,7 +1042,7 @@ abstract contract _Execute is ProposalTest {
   }
 
   function testFuzz_GrantedPauserCanPauseAndUnPause(address _newPauser) public {
-    assummeNotTimelock(_newPauser);
+    _assumeNotTimelock(_newPauser);
 
     _grantNewPauserViaGovernance(_newPauser);
 
@@ -1058,7 +1058,7 @@ abstract contract _Execute is ProposalTest {
   }
 
   function testFuzz_CanRevokePauserOnDrips(address _newPauser) public {
-    assummeNotTimelock(_newPauser);
+    _assumeNotTimelock(_newPauser);
     _grantNewPauserViaGovernance(_newPauser);
 
     // Ensure the new pauser has been granted pauser role
@@ -1071,7 +1071,7 @@ abstract contract _Execute is ProposalTest {
   }
 
   function testFuzz_RevertWhen_PauseAfterRevoke(address _newPauser) public {
-    assummeNotTimelock(_newPauser);
+    _assumeNotTimelock(_newPauser);
     _grantNewPauserViaGovernance(_newPauser);
 
     // Ensure the new pauser has been granted pauser role
@@ -1108,7 +1108,7 @@ abstract contract _Execute is ProposalTest {
   }
 
   function testFuzz_CanProposeNewAdminViaGovernance(address _newAdmin) public {
-    assummeNotTimelock(_newAdmin);
+    _assumeNotTimelock(_newAdmin);
     _proposeNewAdminViaGovernance(_newAdmin);
 
     // Ensure the new admin has been proposed
