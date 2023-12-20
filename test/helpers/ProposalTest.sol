@@ -59,12 +59,12 @@ abstract contract ProposalTest is RadworksGovernorTest {
   // a cheat for fuzzing addresses that are payable only
   // Why is this no longer in standard cheats? JJF
   // see https://github.com/foundry-rs/foundry/issues/3631
-  function assumePayable(address _addr) internal virtual {
+  function _assumePayable(address _addr) internal virtual {
     (bool success,) = payable(_addr).call{value: 0}("");
     vm.assume(success);
   }
 
-  function assummeNotTimelock(address _addr) internal virtual {
+  function _assumeNotTimelock(address _addr) internal virtual {
     vm.assume(
       // We don't want the receiver to be the Timelock, as that would make our
       // assertions less meaningful -- most of our tests want to confirm that
@@ -80,8 +80,8 @@ abstract contract ProposalTest is RadworksGovernorTest {
   }
 
   function _assumeReceiver(address _receiver) internal {
-    assumePayable(_receiver);
-    assummeNotTimelock(_receiver);
+    _assumePayable(_receiver);
+    _assumeNotTimelock(_receiver);
   }
 
   function _randomERC20Token(uint256 _seed) internal pure returns (IERC20 _token) {

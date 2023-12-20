@@ -41,7 +41,7 @@ abstract contract RadworksDripsGovernance is ProposalTest {
   }
 
   function testFuzz_grantPauserOnDrips(address _newPauser) public {
-    assummeNotTimelock(_newPauser);
+    _assumeNotTimelock(_newPauser);
     address[] memory _originalPausers = drips.allPausers();
 
     _grantNewPauserViaGovernance(_newPauser);
@@ -54,7 +54,7 @@ abstract contract RadworksDripsGovernance is ProposalTest {
   }
 
   function testFuzz_grantedPauserCanPauseAndUnPause(address _newPauser) public {
-    assummeNotTimelock(_newPauser);
+    _assumeNotTimelock(_newPauser);
 
     _grantNewPauserViaGovernance(_newPauser);
 
@@ -70,7 +70,7 @@ abstract contract RadworksDripsGovernance is ProposalTest {
   }
 
   function testFuzz_revokePauserOnDrips(address _newPauser) public {
-    assummeNotTimelock(_newPauser);
+    _assumeNotTimelock(_newPauser);
     _grantNewPauserViaGovernance(_newPauser);
 
     // Ensure the new pauser has been granted pauser role
@@ -83,7 +83,7 @@ abstract contract RadworksDripsGovernance is ProposalTest {
   }
 
   function testFuzz_revertWhenRevokedPauserAttemptsPause(address _newPauser) public {
-    assummeNotTimelock(_newPauser);
+    _assumeNotTimelock(_newPauser);
     _grantNewPauserViaGovernance(_newPauser);
 
     // Ensure the new pauser has been granted pauser role
