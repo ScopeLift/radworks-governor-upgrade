@@ -167,7 +167,7 @@ abstract contract RadworksDripsGovernance is ProposalTest {
   }
 
   function testFuzz_proposeNewAdminViaGovernance(address _newAdmin) public {
-    assummeNotTimelock(_newAdmin);
+    _assumeNotTimelock(_newAdmin);
     _proposeNewAdminViaGovernance(_newAdmin);
 
     // Ensure the new admin has been proposed
