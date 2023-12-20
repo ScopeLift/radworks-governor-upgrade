@@ -42,6 +42,7 @@ abstract contract RadworksDripsGovernance is ProposalTest {
 
   function testFuzz_grantPauserOnDrips(address _newPauser) public {
     _assumeNotTimelock(_newPauser);
+    vm.assume(!drips.isPauser(_newPauser));
     address[] memory _originalPausers = drips.allPausers();
 
     _grantNewPauserViaGovernance(_newPauser);
