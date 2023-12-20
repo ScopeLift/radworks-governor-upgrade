@@ -15,8 +15,7 @@ contract Constants {
   address constant MTV_ADDRESS = 0x6226e00bCAc68b0Fe55583B90A1d727C14fAB77f;
   uint256 constant MAX_REASONABLE_TIME_PERIOD = 302_400; // 6 weeks assume a 12 sec block time
 
-  // we have not yet deployed the Radworks Bravo Governor
-  // @dev: this is a placeholder address and will be replaced with the deployed address
+  // we have not yet deployed the Radworks Bravo Governor (will be replaced with deployed address)
   address constant DEPLOYED_BRAVO_GOVERNOR = address(0x0);
 
   uint256 constant QUORUM = 4_000_000e18;
