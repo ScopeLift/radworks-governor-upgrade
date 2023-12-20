@@ -5,8 +5,6 @@ import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import {ProposalTest} from "test/helpers/ProposalTest.sol";
 
-import {console2} from "forge-std/console2.sol";
-
 /// @dev This contract used in the testing of using governance to upgrade the Drips protocol
 /// It has just enough infrastructure to be installed as a new implementation of the Drips proxy.
 contract DripsUpgradeContract is UUPSUpgradeable {
