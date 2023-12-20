@@ -10,6 +10,9 @@ out/
 # Dotenv file
 .env
 
+# MacOS file cruff
+.DS_Store
+
 # Coverage
 lcov.info
 
