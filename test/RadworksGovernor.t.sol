@@ -1044,7 +1044,6 @@ abstract contract _Execute is ProposalTest {
 
   function testFuzz_GrantedPauserCanPauseAndUnPause(address _newPauser) public {
     _assumeNotTimelock(_newPauser);
-
     _grantNewPauserViaGovernance(_newPauser);
 
     // Ensure the new pauser can pause the DRIPS protocol
