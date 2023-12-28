@@ -654,9 +654,6 @@ abstract contract Propose is ProposalTest {
   }
 }
 
-// TODO: future PR
-abstract contract Execute is ProposalTest {}
-
 // Run the tests using the deployed Governor Bravo (future PR)
 
 // Run the tests using a version of the Governor deployed by the Deploy script
@@ -676,12 +673,6 @@ contract ProposeTestWithDeployScriptGovernor is Propose {
 // TODO: (future PR)
 
 // contract CastVoteWithReasonAndParamsTestWithDeployScriptGovernor is CastVoteWithReasonAndParams {
-//   function _useDeployedGovernorBravo() internal pure override returns (bool) {
-//     return false;
-//   }
-// }
-
-// contract _ExecuteTestWithDeployScriptGovernor is _Execute {
 //   function _useDeployedGovernorBravo() internal pure override returns (bool) {
 //     return false;
 //   }

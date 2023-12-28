@@ -8,11 +8,13 @@ import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
 
 import {TestableProposeScript} from "test/helpers/TestableProposeScript.sol";
 import {IGovernorAlpha} from "src/interfaces/IGovernorAlpha.sol";
+import {IDrips} from "src/interfaces/IDrips.sol";
 import {RadworksGovernorTest} from "test/helpers/RadworksGovernorTest.sol";
 
 abstract contract ProposalTest is RadworksGovernorTest {
   //----------------- State and Setup ----------- //
 
+  IDrips drips = IDrips(DRIPS);
   IGovernorAlpha governorAlpha = IGovernorAlpha(GOVERNOR_ALPHA);
   ICompoundTimelock timelock = ICompoundTimelock(payable(TIMELOCK));
   uint256 initialProposalCount;
@@ -57,25 +59,29 @@ abstract contract ProposalTest is RadworksGovernorTest {
   // a cheat for fuzzing addresses that are payable only
   // Why is this no longer in standard cheats? JJF
   // see https://github.com/foundry-rs/foundry/issues/3631
-  function assumePayable(address addr) internal virtual {
-    (bool success,) = payable(addr).call{value: 0}("");
+  function _assumePayable(address _addr) internal virtual {
+    (bool success,) = payable(_addr).call{value: 0}("");
     vm.assume(success);
   }
 
-  function _assumeReceiver(address _receiver) internal {
-    assumePayable(_receiver);
+  function _assumeNotTimelock(address _addr) internal virtual {
     vm.assume(
       // We don't want the receiver to be the Timelock, as that would make our
       // assertions less meaningful -- most of our tests want to confirm that
       // proposals can cause tokens to be sent *from* the timelock to somewhere
       // else.
-      _receiver != TIMELOCK
+      _addr != TIMELOCK
       // We also can't have the receiver be the zero address because RAD
       // blocks transfers to the zero address -- see line 396:
       // https://etherscan.io/address/0x31c8EAcBFFdD875c74b94b077895Bd78CF1E64A3#code
-      && _receiver > address(0)
+      && _addr > address(0)
     );
-    assumeNoPrecompiles(_receiver);
+    assumeNoPrecompiles(_addr);
+  }
+
+  function _assumeReceiver(address _receiver) internal {
+    _assumePayable(_receiver);
+    _assumeNotTimelock(_receiver);
   }
 
   function _randomERC20Token(uint256 _seed) internal pure returns (IERC20 _token) {
@@ -188,6 +194,26 @@ abstract contract ProposalTest is RadworksGovernorTest {
     returns (bytes memory)
   {
     return abi.encodePacked(bytes4(keccak256(bytes(_signature))), _calldata);
+  }
+
+  function _buildDripsGovernanceProposal(string memory _description, bytes memory _callData)
+    internal
+    pure
+    returns (
+      address[] memory _targets,
+      uint256[] memory _values,
+      bytes[] memory _calldata,
+      string memory _returnedDescription
+    )
+  {
+    // Craft a new proposal to peform a Drips governance operation.
+    _targets = new address[](1);
+    _values = new uint256[](1);
+    _calldata = new bytes[](1);
+
+    _targets[0] = DRIPS;
+    _calldata[0] = _callData;
+    _returnedDescription = _description;
   }
 
   function _jumpToActiveProposal(uint256 _proposalId) internal {

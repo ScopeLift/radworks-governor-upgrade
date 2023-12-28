@@ -1,5 +1,5 @@
 [profile.default]
-  evm_version = "paris"
+  evm_version = "shanghai"
   fuzz = { seed = "1" }
   optimizer = true
   optimizer_runs = 10_000_000
