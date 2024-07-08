@@ -1156,7 +1156,7 @@ contract _ExecuteTestWithDeployScriptGovernor is _Execute {
   }
 }
 
-// Run the tests using the on-chain deployed Governor Bravo (when it has been deployed)
+// Run the tests using the on-chain deployed Governor Bravo (when it gets been deployed)
 
 // contract ConstructorTestWithOnChainGovernor is Constructor {
 //   function _useDeployedGovernorBravo() internal pure override returns (bool) {
