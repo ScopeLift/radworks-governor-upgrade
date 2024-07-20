@@ -35,23 +35,9 @@ abstract contract ProposalTest is RadworksGovernorTest {
 
   function setUp() public virtual override {
     RadworksGovernorTest.setUp();
-
-    if (_useDeployedGovernorBravo()) {
-      // Use the actual live proposal data expected to be on chain
-      // if Radworks Governor Bravo has already deployed
-      upgradeProposalId = 17; // assume this is the next proposal (as most recent is 16)
-      // Since the proposal was already submitted, the count before its submissions is one less
-      initialProposalCount = governorAlpha.proposalCount() - 1;
-    } else {
-      initialProposalCount = governorAlpha.proposalCount();
-
-      TestableProposeScript _proposeScript = new TestableProposeScript();
-      // We override the deployer to use an alternate delegate, because in this context,
-      // the PROPOSER_ADDRESS used already has a live proposal
-      _proposeScript.overrideProposerForTests(0x69dceee155C31eA0c8354F90BDD65C12FaF5A00a);
-
-      upgradeProposalId = _proposeScript.run(governorBravo);
-    }
+    initialProposalCount = governorAlpha.proposalCount();
+    TestableProposeScript _proposeScript = new TestableProposeScript();
+    upgradeProposalId = _proposeScript.run(governorBravo);
   }
 
   //--------------- HELPERS ---------------//
@@ -76,7 +62,7 @@ abstract contract ProposalTest is RadworksGovernorTest {
       // https://etherscan.io/address/0x31c8EAcBFFdD875c74b94b077895Bd78CF1E64A3#code
       && _addr > address(0)
     );
-    assumeNoPrecompiles(_addr);
+    assumeNotPrecompile(_addr);
   }
 
   function _assumeReceiver(address _receiver) internal {
@@ -116,7 +102,8 @@ abstract contract ProposalTest is RadworksGovernorTest {
   }
 
   function _jumpPastProposalEta() internal {
-    vm.roll(block.number + 1); // move up one block so we're not in the same block as when queued
+    vm.roll(vm.getBlockNumber() + 1); // move up one block so we're not in the same block as when
+    // queued
     vm.warp(_upgradeProposalEta() + 1); // jump past the eta timestamp
   }
 

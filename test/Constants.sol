@@ -7,7 +7,11 @@ contract Constants {
   address constant TIMELOCK = 0x8dA8f82d2BbDd896822de723F55D6EdF416130ba;
   address constant DRIPS = 0xd0Dd053392db676D57317CD4fe96Fc2cCf42D0b4;
 
-  address constant PROPOSER = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b; // cloudhead.eth
+  address constant PROPOSER = 0xEA95cfB5Dd624F43775b372db0ED2D8d0073E91C; // Abbey
+  // ScopeLift address for receiving the RAD tokens upon upgrade execution
+  address constant SCOPELIFT_ADDRESS = 0x5C04E7808455ee0e22c2773328C151d0DD79dC62;
+  // Number of RAD tokens to transfer to ScopeLift upon upgrade execution
+  uint256 constant SCOPELIFT_PAYMENT = 8065e18;
 
   address constant USDC_ADDRESS = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
   address constant GTC_ADDRESS = 0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F;
@@ -15,8 +19,7 @@ contract Constants {
   address constant MTV_ADDRESS = 0x6226e00bCAc68b0Fe55583B90A1d727C14fAB77f;
   uint256 constant MAX_REASONABLE_TIME_PERIOD = 302_400; // 6 weeks assume a 12 sec block time
 
-  // we have not yet deployed the Radworks Bravo Governor (will be replaced with deployed address)
-  address constant DEPLOYED_BRAVO_GOVERNOR = address(0x0);
+  address constant DEPLOYED_BRAVO_GOVERNOR = 0xD64D01D04498bFc60f04178e0B62a757C5048212;
 
   uint256 constant QUORUM = 4_000_000e18;
 }

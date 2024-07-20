@@ -13,7 +13,7 @@ import {DeployInput} from "script/DeployInput.sol";
 /// @notice Script to submit the proposal to upgrade Radworks governor.
 contract Propose is Script, Constants, DeployInput {
   IGovernorAlpha constant RADWORK_GOVERNOR_ALPHA = IGovernorAlpha(GOVERNOR_ALPHA);
-  address PROPOSER_ADDRESS = 0x464D78a5C97A2E2E9839C353ee9B6d4204c90B0b; // cloudhead.eth
+  address PROPOSER_ADDRESS = PROPOSER; // abbey
 
   function propose(RadworksGovernor _newGovernor) internal returns (uint256 _proposalId) {
     address[] memory _targets = new address[](3);
