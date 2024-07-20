@@ -1156,22 +1156,22 @@ contract _ExecuteTestWithDeployScriptGovernor is _Execute {
   }
 }
 
-// Run the tests using the on-chain deployed Governor Bravo (when it has been deployed)
+// Run the tests using the on-chain deployed Governor Bravo
 
-// contract ConstructorTestWithOnChainGovernor is Constructor {
-//   function _useDeployedGovernorBravo() internal pure override returns (bool) {
-//     return true;
-//   }
-// }
+contract ConstructorTestWithOnChainGovernor is Constructor {
+  function _useDeployedGovernorBravo() internal pure override returns (bool) {
+    return true;
+  }
+}
 
-// contract ProposeTestWithOnChainGovernor is Propose {
-//   function _useDeployedGovernorBravo() internal pure override returns (bool) {
-//     return true;
-//   }
-// }
+contract ProposeTestWithOnChainGovernor is Propose {
+  function _useDeployedGovernorBravo() internal pure override returns (bool) {
+    return true;
+  }
+}
 
-// contract _ExecuteTestWithOnChainGovernor is _Execute {
-//   function _useDeployedGovernorBravo() internal pure override returns (bool) {
-//     return true;
-//   }
-// }
+contract _ExecuteTestWithOnChainGovernor is _Execute {
+  function _useDeployedGovernorBravo() internal pure override returns (bool) {
+    return true;
+  }
+}
