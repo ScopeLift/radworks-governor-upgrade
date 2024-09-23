@@ -119,6 +119,7 @@ abstract contract Propose is ProposalTest {
     // RAD_TOKEN handled specially as bravo upgrade changes RAD token balances
     IERC20 _token = IERC20(RAD_TOKEN);
     _assumeReceiver(_receiver);
+    vm.assume(_receiver != SCOPELIFT_ADDRESS);
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
 
     // bound by the number of tokens the timelock currently controls
@@ -232,6 +233,7 @@ abstract contract Propose is ProposalTest {
     // @dev: RAD_TOKEN handled specially as bravo upgrade changes RAD token balances
     IERC20 _token = IERC20(RAD_TOKEN);
     _assumeReceiver(_receiver);
+    vm.assume(_receiver != SCOPELIFT_ADDRESS);
 
     vm.deal(TIMELOCK, _amountETH);
     uint256 _timelockETHBalance = TIMELOCK.balance;
@@ -453,6 +455,7 @@ abstract contract Propose is ProposalTest {
     // @dev: RAD_TOKEN handled specially as bravo upgrade changes RAD token balances
     IERC20 _token = IERC20(RAD_TOKEN);
     _assumeReceiver(_receiver);
+    vm.assume(_receiver != SCOPELIFT_ADDRESS);
     uint256 _timelockTokenBalance = _token.balanceOf(TIMELOCK);
 
     // bound by the number of tokens the timelock currently controls
