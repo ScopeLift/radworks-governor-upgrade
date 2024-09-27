@@ -28,7 +28,7 @@ abstract contract RadworksGovernorTest is Test, DeployInput, Constants {
   function setUp() public virtual {
     // The latest block when this test was written. If you update the fork block
     // make sure to also update the top 6 delegates below.
-    uint256 _forkBlock = 20_341_999;
+    uint256 _forkBlock = 20_826_606;
 
     vm.createSelectFork(vm.rpcUrl("mainnet"), _forkBlock);
 

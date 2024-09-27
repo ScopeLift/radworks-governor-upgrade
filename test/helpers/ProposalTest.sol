@@ -36,8 +36,17 @@ abstract contract ProposalTest is RadworksGovernorTest {
   function setUp() public virtual override {
     RadworksGovernorTest.setUp();
     initialProposalCount = governorAlpha.proposalCount();
-    TestableProposeScript _proposeScript = new TestableProposeScript();
-    upgradeProposalId = _proposeScript.run(governorBravo);
+    if (_useDeployedGovernorBravo()) {
+      // Use the actual live proposal data
+      upgradeProposalId = 25;
+      // Since the proposal was already submitted, the count before its submission is one less
+      initialProposalCount = governorAlpha.proposalCount() - 1;
+    } else {
+      initialProposalCount = governorAlpha.proposalCount();
+
+      TestableProposeScript _proposeScript = new TestableProposeScript();
+      upgradeProposalId = _proposeScript.run(governorBravo);
+    }
   }
 
   //--------------- HELPERS ---------------//
